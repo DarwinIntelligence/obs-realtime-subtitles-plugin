@@ -34,11 +34,14 @@
     "platformConfig": {
         "macos": {
             "bundleId": "com.example.obs-plugintemplate"
+        },
+        "linux-x86_64": {
+            "qtVersion": 6
         }
     },
     "name": "obs-plugintemplate",
     "displayName": "OBS Plugin Template",
-    "version": "1.0.0",
+    "version": "0.0.1",
     "author": "Your Name Here",
     "website": "https://example.com",
     "email": "me@example.com",
