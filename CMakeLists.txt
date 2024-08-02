@@ -13,6 +13,8 @@ include(helpers)
 
 add_library(${CMAKE_PROJECT_NAME} MODULE)
 
+include_directories(src/gui)
+
 find_package(libobs REQUIRED)
 target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE OBS::libobs)
 
@@ -32,8 +34,13 @@ if(ENABLE_QT)
     PROPERTIES AUTOMOC ON
                AUTOUIC ON
                AUTORCC ON)
+               # Process the .ui file with uic
+  qt6_wrap_ui(UI_HEADERS gui/main_window.ui)
 endif()
 
-target_sources(${CMAKE_PROJECT_NAME} PRIVATE src/plugin-main.cpp)
+target_sources(${CMAKE_PROJECT_NAME} PRIVATE
+                src/plugin-main.cpp
+                src/gui/qt_gui.cpp
+                )
 
 set_target_properties_plugin(${CMAKE_PROJECT_NAME} PROPERTIES OUTPUT_NAME ${_name})

@@ -32,7 +32,6 @@ set(_obs_clang_c_options
     -Wformat
     -Wformat-security
     -Wfour-char-constants
-    -Winfinite-recursion
     -Wint-conversion
     -Wnewline-eof
     -Wno-conversion
