@@ -25,7 +25,6 @@ endif()
 
 if(ENABLE_QT)
   find_package(Qt6 COMPONENTS Widgets Core)
-  qt6_wrap_ui(UI_HEADERS gui/main_window.ui)
   target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE Qt6::Core Qt6::Widgets)
   target_compile_options(
     ${CMAKE_PROJECT_NAME} PRIVATE $<$<C_COMPILER_ID:Clang,AppleClang>:-Wno-quoted-include-in-framework-header
@@ -41,7 +40,7 @@ endif()
 
 target_sources(${CMAKE_PROJECT_NAME} PRIVATE
                 src/plugin-main.cpp
-                src/gui/qt_gui.cpp
+                src/countdown-widget.cpp
                 )
 
 set_target_properties_plugin(${CMAKE_PROJECT_NAME} PROPERTIES OUTPUT_NAME ${_name})
