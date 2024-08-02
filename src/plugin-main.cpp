@@ -8,11 +8,11 @@ OBS_MODULE_USE_DEFAULT_LOCALE(PLUGIN_NAME, "en-US");
 
 OBS_MODULE_AUTHOR("DarwinIntelligence");
 
+
 bool obs_module_load(void)
 {
 	obs_log(LOG_INFO, "[OBS RealTime Subtitles] plugin loaded successfully (version %s)",
 			PLUGIN_VERSION);
-    run_qt_app(); // Run the Qt application
 	return true;
 }
 

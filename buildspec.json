@@ -39,10 +39,10 @@
             "qtVersion": 6
         }
     },
-    "name": "obs-realtime-subtitles-plugin",
+    "name": "libobs_realtime_subtitles_plugin",
     "displayName": "OBS Realtime Subtitles Plugin",
     "version": "0.0.1",
-    "author": "김재범",
+    "author": "Kim JaeBum",
     "website": "https://darwinai.ai",
     "email": "darwinai@darwinai.ai",
     "uuids": {
