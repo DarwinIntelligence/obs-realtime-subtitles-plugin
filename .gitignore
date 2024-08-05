@@ -7,6 +7,7 @@
 !/cmake
 !/data
 !/assets
+!/lib
 !/src
 !.clang-format
 !.cmake-format.json
