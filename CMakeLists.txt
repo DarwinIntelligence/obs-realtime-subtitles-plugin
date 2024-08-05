@@ -34,8 +34,6 @@ if(ENABLE_QT)
     PROPERTIES AUTOMOC ON
                AUTOUIC ON
                AUTORCC ON)
-               # Process the .ui file with uic
-
 endif()
 
 target_sources(${CMAKE_PROJECT_NAME} PRIVATE
