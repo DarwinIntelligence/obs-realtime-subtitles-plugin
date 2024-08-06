@@ -33,15 +33,18 @@
     },
     "platformConfig": {
         "macos": {
-            "bundleId": "com.example.obs-plugintemplate"
+            "bundleId": "com.example.obs-realtime-subtitles-plugin"
+        },
+        "linux-x86_64": {
+            "qtVersion": 6
         }
     },
-    "name": "obs-plugintemplate",
-    "displayName": "OBS Plugin Template",
-    "version": "1.0.0",
-    "author": "Your Name Here",
-    "website": "https://example.com",
-    "email": "me@example.com",
+    "name": "libobs_realtime_subtitles_plugin",
+    "displayName": "OBS Realtime Subtitles Plugin",
+    "version": "0.0.1",
+    "author": "Kim JaeBum",
+    "website": "https://darwinai.ai",
+    "email": "darwinai@darwinai.ai",
     "uuids": {
         "windowsApp": "00000000-0000-0000-0000-000000000000"
     }
