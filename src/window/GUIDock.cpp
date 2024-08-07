@@ -1,4 +1,4 @@
-#include <GUIDock.h>
+#include "GUIDock.h"
 #include <ui_GUIDock.h>
 
 GUIDock::GUIDock(const QString &title, PluginManager &manager, MainWindow &caption_widget)
@@ -7,4 +7,9 @@ GUIDock::GUIDock(const QString &title, PluginManager &manager, MainWindow &capti
     setWindowTitle(title);
 
     setFloating(true);
+}
+
+GUIDock::~GUIDock()
+{
+
 }

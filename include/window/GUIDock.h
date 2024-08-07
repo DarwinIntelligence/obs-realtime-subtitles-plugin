@@ -18,6 +18,7 @@ private:
 
 public:
     explicit GUIDock(const QString &title, PluginManager &manager, MainWindow &caption_widget);
+    ~GUIDock();
 };
 
 
