@@ -1,5 +1,5 @@
-#ifndef COUNTDOWNWIDGET_H
-#define COUNTDOWNWIDGET_H
+#ifndef MAINWINDOW_H
+#define MAINWINDOW_H
 
 #include <QMainWindow>
 #include <QDockWidget>
@@ -39,20 +39,20 @@
 #include <obs-module.h>
 #include <obs-websocket-api.h>
 
-#include "ui_RealTimeSubtitles.h"
+#include "ui_MainWindow.h"
 
 #define CONFIG "config.json"
 
-class MainWidget : public QWidget {
+class MainWindow : public QWidget {
 	Q_OBJECT
 public:
-	explicit MainWidget();
-	~MainWidget();
+	explicit MainWindow();
+	~MainWindow();
 
 	void show_self();
 
 private:
-	Ui::RealTimeSubtitles *ui;
+	Ui::MainWindow *ui;
 };
 
-#endif // COUNTDOWNWIDGET_H
+#endif // MAINWINDOW_H
