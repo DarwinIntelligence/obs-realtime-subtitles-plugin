@@ -32,11 +32,10 @@ bool obs_module_load(void)
 	QAction *action = (QAction *) obs_frontend_add_tools_menu_qaction("RealTime Subtitles");
     action->connect(action, &QAction::triggered, &menu_clicked);
 
-	dock = new GUIDock("Captions", *plugin_manager, *mainWindow);
-    dock->setObjectName("cloud_caption_caption_dock");
+	dock = new GUIDock("RealTime Subtitles", *plugin_manager, *mainWindow);
     QMainWindow *main_wid = (QMainWindow *) obs_frontend_get_main_window();
     main_wid->addDockWidget(Qt::BottomDockWidgetArea, dock);
-    obs_frontend_add_dock_by_id("0", nullptr, dock);
+    obs_frontend_add_dock_by_id("0", "RealTime Subtitles", dock);
 	return true;
 }
 

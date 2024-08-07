@@ -2,9 +2,12 @@
 #define GUIDOCK_H
 
 #include <QDockWidget>
+#include <QString>
+
 #include "PluginManager.h"
 #include "MainWindow.h"
 #include <ui_GUIDock.h>
+
 
 class GUIDock : public QDockWidget, Ui_GUIDock {
 Q_OBJECT
@@ -14,7 +17,7 @@ private:
     string last_output_line;
 
 public:
-    explicit GUIDock(const QString &title, PluginManager &plugin_manager, MainWindow &main_caption_widget);
+    explicit GUIDock(const QString &title, PluginManager &manager, MainWindow &caption_widget);
 };
 
 
