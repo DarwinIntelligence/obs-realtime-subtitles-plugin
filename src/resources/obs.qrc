@@ -1,7 +1,0 @@
-<RCC>
-  <qresource prefix="/res">
-  </qresource>
-  <qresource prefix="/settings">
-    <file>images/logo.png</file>
-  </qresource>
-</RCC>

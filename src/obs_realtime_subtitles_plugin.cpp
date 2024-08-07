@@ -4,6 +4,8 @@
 #include <obs-module.h>
 #include <PluginSupport.h>
 #include <obs-source.h>
+#include <GUIDock.h>
+#include <PluginManager.h>
 
 OBS_DECLARE_MODULE();
 OBS_MODULE_USE_DEFAULT_LOCALE(PLUGIN_NAME, "en-US");
@@ -11,8 +13,8 @@ OBS_MODULE_USE_DEFAULT_LOCALE(PLUGIN_NAME, "en-US");
 OBS_MODULE_AUTHOR("DarwinIntelligence");
 
 MainWindow *mainWindow = nullptr;
-
-void menu_clicked();
+PluginManager *plugin_manager = nullptr;
+GUIDock *dock = nullptr;
 
 void menu_clicked() {
 	obs_log(LOG_INFO, "Main menu clicked");
@@ -29,6 +31,12 @@ bool obs_module_load(void)
 	mainWindow = new MainWindow();
 	QAction *action = (QAction *) obs_frontend_add_tools_menu_qaction("RealTime Subtitles");
     action->connect(action, &QAction::triggered, &menu_clicked);
+
+	dock = new GUIDock("Captions", *plugin_manager, *mainWindow);
+    dock->setObjectName("cloud_caption_caption_dock");
+    QMainWindow *main_wid = (QMainWindow *) obs_frontend_get_main_window();
+    main_wid->addDockWidget(Qt::BottomDockWidgetArea, dock);
+    obs_frontend_add_dock_by_id("0", nullptr, dock);
 	return true;
 }
 

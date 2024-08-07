@@ -4,8 +4,9 @@
 #include "CaptionPluginSettings.h"
 #include "SourceCaptioner.h"
 #include <PluginSupport.h>
+#include "CaptioningState.h"
 
-class CaptionPluginManager : public QObject {
+class PluginManager : public QObject {
 Q_OBJECT
 
 public:
@@ -18,14 +19,12 @@ private:
     int update_count = 0;
 
 public:
-    CaptionPluginManager(const CaptionPluginSettings &initial_settings);
+    PluginManager(const CaptionPluginSettings &initial_settings);
 
     void external_state_changed(bool is_live, bool is_preview_open, bool is_recording, bool is_virtualcam_on,
                                 const string &scene_collection_name);
 
     void update_settings(const CaptionPluginSettings &new_settings);
-
-    bool toggle_enabled();
 
     CaptioningState captioning_state();
 
