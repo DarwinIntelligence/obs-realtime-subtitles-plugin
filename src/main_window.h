@@ -46,8 +46,10 @@
 class MainWidget : public QWidget {
 	Q_OBJECT
 public:
-	explicit CountdownDockWidget();
-	~CountdownDockWidget();
+	explicit MainWidget();
+	~MainWidget();
+
+	void show_self();
 
 private:
 	Ui::RealTimeSubtitles *ui;

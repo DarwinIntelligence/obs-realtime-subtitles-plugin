@@ -1,15 +1,18 @@
 #include "main_window.h"
 
-CountdownDockWidget::CountdownDockWidget(): QWidget(), ui(new Ui::CountdownTimer)
+MainWidget::MainWidget(): QWidget(), ui(new Ui::RealTimeSubtitles)
 {
 	ui->setupUi(this);
-
-	SetupCountdownWidgetUI(countdownTimerData);
 
 	setVisible(false);
 }
 
-CountdownDockWidget::~CountdownDockWidget()
+void MainWidget::show_self() {
+    show();
+    raise();
+}
+
+MainWidget::~MainWidget()
 {
 
 }

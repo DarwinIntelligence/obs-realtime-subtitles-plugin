@@ -1,3 +1,5 @@
+#include <QAction>
+
 #include <main_window.h>
 #include <obs-module.h>
 #include <plugin-support.h>
@@ -13,7 +15,7 @@ MainWidget *mainWidget = nullptr;
 void menu_clicked();
 
 void menu_clicked() {
-    debug_log("Main Menu button clicked ");
+	obs_log(LOG_INFO, "Main menu clicked");
     if (mainWidget) {
         mainWidget->show_self();
     }
@@ -24,7 +26,7 @@ bool obs_module_load(void)
 {
 	obs_log(LOG_INFO, "plugin loaded successfully (version %s)",
 			PLUGIN_VERSION);
-	mainWidget = new MainWidget(mainWidget);
+	mainWidget = new MainWidget();
 	QAction *action = (QAction *) obs_frontend_add_tools_menu_qaction("RealTime Subtitles");
     action->connect(action, &QAction::triggered, &menu_clicked);
 	return true;
