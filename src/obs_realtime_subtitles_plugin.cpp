@@ -23,18 +23,14 @@ void menu_clicked() {
     }
 }
 
-
 bool obs_module_load(void)
 {
-	obs_log(LOG_INFO, "plugin loaded successfully (version %s)",
-			PLUGIN_VERSION);
+	obs_log(LOG_INFO, "plugin loaded successfully (version %s)", PLUGIN_VERSION);
 	mainWindow = new MainWindow();
 	QAction *action = (QAction *) obs_frontend_add_tools_menu_qaction("RealTime Subtitles");
     action->connect(action, &QAction::triggered, &menu_clicked);
 
-	dock = new GUIDock("RealTime Subtitles", *plugin_manager, *mainWindow);
-    QMainWindow *main_wid = (QMainWindow *) obs_frontend_get_main_window();
-    main_wid->addDockWidget(Qt::BottomDockWidgetArea, dock);
+	dock = new GUIDock();
     obs_frontend_add_dock_by_id("0", "RealTime Subtitles", dock);
 	return true;
 }
