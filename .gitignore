@@ -9,6 +9,7 @@
 !/assets
 !/include
 !/lib
+!/window
 !/src
 !.clang-format
 !.cmake-format.json

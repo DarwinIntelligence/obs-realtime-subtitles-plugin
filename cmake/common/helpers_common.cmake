@@ -47,7 +47,7 @@ if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/PluginSupport.c.in")
   target_sources(
     plugin-support
     PRIVATE PluginSupport.c
-    PUBLIC include/plugin/PluginSupport.h)
+    PUBLIC src/plugin/PluginSupport.h)
   target_include_directories(plugin-support PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include/plugin")
   if(OS_LINUX
      OR OS_FREEBSD

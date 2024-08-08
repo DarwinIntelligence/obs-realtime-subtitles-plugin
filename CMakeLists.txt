@@ -13,7 +13,7 @@ include(helpers)
 
 add_library(${CMAKE_PROJECT_NAME} MODULE)
 
-include_directories(include/plugin include/window lib)
+include_directories(src/plugin src/window lib)
 
 find_package(libobs REQUIRED)
 target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE OBS::libobs)
