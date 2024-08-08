@@ -13,6 +13,8 @@ MainWindow::MainWindow(): QWidget(), ui(new Ui::MainWindow)
     ui->profanity_filter_label->setText(QString::fromUtf8(T_PROFANITY_FILTER_LABEL));
     ui->output_to_label->setText(QString::fromUtf8(T_OUTPUT_TO_LABEL));
     ui->caption_timeout_label->setText(QString::fromUtf8(T_CAPTION_TIMEOUT_LABEL));
+    ui->cancel_button->setText(QString::fromUtf8(T_CANCEL_BUTTON));
+    ui->save_button->setText(QString::fromUtf8(T_SAVE_BUTTON));
 }
 
 void MainWindow::show_self()

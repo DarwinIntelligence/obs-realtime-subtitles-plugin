@@ -11,3 +11,5 @@
 #define T_PROFANITY_FILTER_LABEL   T_("profanity_filter_label")
 #define T_OUTPUT_TO_LABEL          T_("output_to_label")
 #define T_CAPTION_TIMEOUT_LABEL    T_("caption_timeout_label")
+#define T_CANCEL_BUTTON            T_("cancel_button")
+#define T_SAVE_BUTTON              T_("save_button")
