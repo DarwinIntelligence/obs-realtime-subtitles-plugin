@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>RealTime Subtitles</string>
+   <string>mainwindow_title</string>
   </property>
   <widget class="QWidget" name="mainLayout">
    <property name="geometry">

@@ -8,6 +8,7 @@
 #include <obs-module.h>
 #include <obs-frontend-api.h>
 
+#include <UIConstants.h>
 #include <ui_MainWindow.h>
 
 class MainWindow : public QWidget {
