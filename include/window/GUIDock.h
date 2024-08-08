@@ -5,7 +5,7 @@
 #include <QString>
 #include "ui_GUIDock.h"
 
-class GUIDock : public QDockWidget, Ui_GUIDock {
+class GUIDock : public QDockWidget {
 Q_OBJECT
 public:
     explicit GUIDock();
