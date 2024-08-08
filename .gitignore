@@ -7,7 +7,9 @@
 !/cmake
 !/data
 !/assets
+!/include
 !/lib
+!/window
 !/src
 !.clang-format
 !.cmake-format.json
@@ -26,3 +28,4 @@
 
 # Exclude CMake build number cache
 /cmake/.CMakeBuildNumber
+src/RealTimeSubtitles.ui.autosave

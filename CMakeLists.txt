@@ -13,7 +13,7 @@ include(helpers)
 
 add_library(${CMAKE_PROJECT_NAME} MODULE)
 
-include_directories(src/gui lib)
+include_directories(src/plugin src/window lib)
 
 find_package(libobs REQUIRED)
 target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE OBS::libobs)
@@ -36,6 +36,10 @@ if(ENABLE_QT)
                AUTORCC ON)
 endif()
 
-target_sources(${CMAKE_PROJECT_NAME} PRIVATE src/plugin-main.cpp src/countdown-widget.cpp)
+file(GLOB Window src/window/*.cpp)
+
+file(GLOB Plugin src/plugin/*.cpp)
+
+target_sources(${CMAKE_PROJECT_NAME} PRIVATE src/obs_realtime_subtitles_plugin.cpp ${Plugin} ${Window})
 
 set_target_properties_plugin(${CMAKE_PROJECT_NAME} PROPERTIES OUTPUT_NAME ${_name})
