@@ -3,13 +3,15 @@
 
 #include <QDockWidget>
 #include <QString>
-#include <ui_GUIDock.h>
+#include "ui_GUIDock.h"
 
 class GUIDock : public QDockWidget, Ui_GUIDock {
 Q_OBJECT
 public:
     explicit GUIDock();
-    ~GUIDock() override;
+    ~GUIDock();
+private:
+    Ui::GUIDock *ui;
 };
 
 

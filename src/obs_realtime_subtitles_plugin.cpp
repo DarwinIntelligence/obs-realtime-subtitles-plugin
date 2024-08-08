@@ -16,7 +16,8 @@ MainWindow *mainWindow = nullptr;
 PluginManager *plugin_manager = nullptr;
 GUIDock *dock = nullptr;
 
-void menu_clicked() {
+void menu_clicked()
+{
 	obs_log(LOG_INFO, "Main menu clicked");
     if (mainWindow) {
         mainWindow->show_self();
