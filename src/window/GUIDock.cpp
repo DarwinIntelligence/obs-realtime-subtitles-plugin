@@ -3,7 +3,8 @@
 GUIDock::GUIDock() : ui(new Ui::GUIDock)
 {
     ui->setupUi(this);
-    setFloating(true);
+	setVisible(false);
+	setFloating(true);
 }
 
 GUIDock::~GUIDock()
