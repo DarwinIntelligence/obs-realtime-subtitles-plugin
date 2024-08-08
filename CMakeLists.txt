@@ -36,13 +36,10 @@ if(ENABLE_QT)
                AUTORCC ON)
 endif()
 
-FILE(GLOB Window src/window/*.cpp)
+file(GLOB Window src/window/*.cpp)
 
-FILE(GLOB Plugin src/plugin/*.cpp)
+file(GLOB Plugin src/plugin/*.cpp)
 
-target_sources(${CMAKE_PROJECT_NAME} PRIVATE
-src/obs_realtime_subtitles_plugin.cpp 
-${Plugin}
-${Window})
+target_sources(${CMAKE_PROJECT_NAME} PRIVATE src/obs_realtime_subtitles_plugin.cpp ${Plugin} ${Window})
 
 set_target_properties_plugin(${CMAKE_PROJECT_NAME} PROPERTIES OUTPUT_NAME ${_name})
