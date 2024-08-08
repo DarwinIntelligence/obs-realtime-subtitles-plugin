@@ -1,7 +1,7 @@
 #include "MainWindow.h"
 
 
-MainWindow::MainWindow(): QWidget(), ui(new Ui::MainWindow)
+MainWindow::MainWindow(QWidget* parent): QDialog(parent), ui(new Ui::MainWindow)
 {
 	ui->setupUi(this);
 	setVisible(false);

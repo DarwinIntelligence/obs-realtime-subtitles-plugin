@@ -11,10 +11,10 @@
 #include <UIConstants.h>
 #include <ui_MainWindow.h>
 
-class MainWindow : public QWidget {
+class MainWindow : public QDialog {
 	Q_OBJECT
 public:
-	explicit MainWindow();
+	explicit MainWindow(QWidget* parent = nullptr);
 	~MainWindow();
 
 	void show_self();
