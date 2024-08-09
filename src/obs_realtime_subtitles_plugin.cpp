@@ -6,6 +6,7 @@
 #include <obs-source.h>
 #include <GUIDock.h>
 #include <PluginManager.h>
+#include <TranscriptPlugin.h>
 
 OBS_DECLARE_MODULE();
 OBS_MODULE_USE_DEFAULT_LOCALE(PLUGIN_NAME, "en-US");
