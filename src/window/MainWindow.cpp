@@ -5,14 +5,14 @@ MainWindow::MainWindow(QWidget* parent): QDialog(parent), ui(new Ui::MainWindow)
 {
     // Setup main window for the settings
     // Show UI and link the buttons and input to function callbacks
-	ui->setupUi(this);
-	setVisible(false);
+    ui->setupUi(this);
+    setVisible(false);
     // Use title from locale
     setWindowTitle(QString::fromUtf8(T_WINDOW_TITLE));
 
     setupUIText();
 
-	ConnectUISignalHandlers();
+    ConnectUISignalHandlers();
 }
 
 void MainWindow::setupUIText()
@@ -32,15 +32,15 @@ void MainWindow::setupUIText()
 
 void MainWindow::ConnectUISignalHandlers()
 {
-	QObject::connect(ui->cancel_button,
+    QObject::connect(ui->cancel_button,
             SIGNAL(clicked()),
             this,
-			SLOT(close()));
+            SLOT(close()));
 
-	QObject::connect(ui->save_button,
+    QObject::connect(ui->save_button,
             SIGNAL(clicked()),
             this,
-			SLOT(SaveButtonClicked()));
+            SLOT(SaveButtonClicked()));
 
     QObject::connect(ui->audio_source_dropdown,
                     SIGNAL(currentTextChanged(QString)),
@@ -67,19 +67,19 @@ void MainWindow::show_self()
 void MainWindow::HandleAudioSourceChange(QString new_text)
 {
     std::string text = new_text.toStdString();
-	obs_log(LOG_INFO, "New value selected for Audio Source");
+    obs_log(LOG_INFO, "New value selected for Audio Source");
 }
 
 void MainWindow::HandleSourceLanguageChange(QString new_text)
 {
     std::string text = new_text.toStdString();
-	obs_log(LOG_INFO, "New value selected for Source Language");
+    obs_log(LOG_INFO, "New value selected for Source Language");
 }
 
 void MainWindow::HandleTranslateLanguageChange(QString new_text)
 {
     std::string text = new_text.toStdString();
-	obs_log(LOG_INFO, "New value selected for Translate Language");
+    obs_log(LOG_INFO, "New value selected for Translate Language");
 }
 
 

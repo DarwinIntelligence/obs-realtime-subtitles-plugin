@@ -18,9 +18,9 @@ GUIDock *dock = nullptr;
 void menu_clicked()
 {
 	obs_log(LOG_INFO, "Main menu clicked");
-    if (mainWindow) {
-        mainWindow->show_self();
-    }
+	if (mainWindow) {
+		mainWindow->show_self();
+	}
 }
 
 bool obs_module_load(void)
@@ -32,10 +32,10 @@ bool obs_module_load(void)
 
 	mainWindow = new MainWindow(main_window);
 	QAction *action = (QAction *) obs_frontend_add_tools_menu_qaction(T_WINDOW_TITLE);
-    action->connect(action, &QAction::triggered, &menu_clicked);
+	action->connect(action, &QAction::triggered, &menu_clicked);
 
 	dock = new GUIDock(main_window);
-    obs_frontend_add_custom_qdock("0", dock);
+	obs_frontend_add_custom_qdock("0", dock);
 	obs_frontend_pop_ui_translation();
 	return true;
 }
