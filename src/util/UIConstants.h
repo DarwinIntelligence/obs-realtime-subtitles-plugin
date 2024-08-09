@@ -13,3 +13,6 @@
 #define T_CAPTION_TIMEOUT_LABEL    T_("caption_timeout_label")
 #define T_CANCEL_BUTTON            T_("cancel_button")
 #define T_SAVE_BUTTON              T_("save_button")
+
+const unsigned int MAX_CAPTION_TIMEOUT_VALUE = 60;
+const unsigned int MIN_CAPTION_TIMEOUT_VALUE = 15;

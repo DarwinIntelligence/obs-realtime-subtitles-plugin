@@ -1,11 +1,10 @@
 #include <QAction>
 
 #include <MainWindow.h>
+#include <obs-source.h>
 #include <obs-module.h>
 #include <PluginSupport.h>
-#include <obs-source.h>
 #include <GUIDock.h>
-#include <PluginManager.h>
 #include "UIConstants.h"
 
 OBS_DECLARE_MODULE();
@@ -14,7 +13,6 @@ OBS_MODULE_USE_DEFAULT_LOCALE(PLUGIN_NAME, "en-GB");
 OBS_MODULE_AUTHOR("DarwinIntelligence");
 
 MainWindow *mainWindow = nullptr;
-PluginManager *plugin_manager = nullptr;
 GUIDock *dock = nullptr;
 
 void menu_clicked()

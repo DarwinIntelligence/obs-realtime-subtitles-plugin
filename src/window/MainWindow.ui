@@ -115,7 +115,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QComboBox" name="source_language_dropdown_2">
+          <widget class="QComboBox" name="translate_language_dropdown">
            <item>
             <property name="text">
              <string>English</string>
@@ -220,7 +220,17 @@
           </widget>
          </item>
          <item>
-          <widget class="QLineEdit" name="caption_timeout_edit"/>
+          <widget class="QSpinBox" name="caption_timeout_spin">
+           <property name="minimum">
+            <number>15</number>
+           </property>
+           <property name="maximum">
+            <number>60</number>
+           </property>
+           <property name="singleStep">
+            <number>5</number>
+           </property>
+          </widget>
          </item>
         </layout>
        </widget>
