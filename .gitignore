@@ -28,4 +28,4 @@
 
 # Exclude CMake build number cache
 /cmake/.CMakeBuildNumber
-src/RealTimeSubtitles.ui.autosave
+*ui.autosave

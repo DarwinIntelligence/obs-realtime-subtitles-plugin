@@ -8,7 +8,7 @@
 class GUIDock : public QDockWidget {
 Q_OBJECT
 public:
-    explicit GUIDock();
+    explicit GUIDock(QWidget *parent = nullptr);
     ~GUIDock();
 private:
     Ui::GUIDock *ui;
