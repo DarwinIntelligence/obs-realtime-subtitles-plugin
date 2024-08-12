@@ -1,7 +1,7 @@
 #ifndef TRANSCRIPTIONPLUGINDATA_H
 #define TRANSCRIPTIONPLUGINDATA_H
 
-#include <util/circlebuf.h>
+#include <util/deque.h>
 #include <util/darray.h>
 #include <media-io/audio-resampler.h>
 
@@ -18,8 +18,8 @@
 
 #define MAX_PREPROC_CHANNELS 10
 
-struct transcription_filter_data {
-	obs_source_t *context; // obs filter source (this filter)
+struct transcript_data {
+	obs_source_t *context; // obs filter source (technically, this is a filter. We take the audio, store it, but don't do anything to it here. )
 	size_t channels;       // number of channels
 	uint32_t sample_rate;  // input sample rate
 	// How many input frames (in input sample rate) are needed for the next whisper frame
@@ -38,13 +38,13 @@ struct transcription_filter_data {
 
 	/* PCM buffers */
 	float *copy_buffers[MAX_PREPROC_CHANNELS];
-	struct circlebuf info_buffer;
-	struct circlebuf input_buffers[MAX_PREPROC_CHANNELS];
-	struct circlebuf whisper_buffer;
+	struct deque info_buffer;
+	struct deque input_buffers[MAX_PREPROC_CHANNELS];
+	// struct deque whisper_buffer;
 
 	/* Resampler */
 	audio_resampler_t *resampler_to_whisper;
-	struct circlebuf resampled_buffer;
+	struct deque resampled_buffer;
 
 	/* whisper */
 	// std::string whisper_model_path;
@@ -130,5 +130,9 @@ struct transcription_filter_data {
 	// }
 };
 
+struct transcript_audio_info{
+	uint32_t frames;
+	uint64_t timestamp_offset_ns; // offset since the start of processing in nano seconds.
+};
 
 #endif //TRANSCRIPTIONPLUGINDATA_H

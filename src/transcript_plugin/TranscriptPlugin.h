@@ -7,7 +7,19 @@
 #include "TranscriptPluginData.h"
 
 
+#include <thread>
+#include <memory>
+#include <mutex>
+#include <condition_variable>
+#include <functional>
+#include <string>
+
+#define MT_ obs_module_text
+
 #define info_log(format, ...) blog(LOG_INFO, format, ##__VA_ARGS__)
+
+#define SAMPLE_RATE 48000
+#define MAX_MS_WORK_BUFFER 11000
 
 
 void transcript_plugin_activate(void *data);
