@@ -40,6 +40,9 @@ void disconnect_source_signals(transcript_data *audio_data, obs_source_t *parent
 }
 
 
+
+
+
 struct obs_audio_data *transcript_plugin_filter_audio(void *data, struct obs_audio_data *audio)
 {
 	info_log("filtering audio");
@@ -149,11 +152,11 @@ void *transcript_plugin_create(obs_data_t *settings, obs_source_t *filter)
 	info_log( "setup audio resampler");
 	struct resample_info src, dst;
 	src.samples_per_sec = audio_data->sample_rate;
-	src.format = AUDIO_FORMAT_FLOAT_PLANAR;
+	src.format = AUDIO_FORMAT_16BIT;
 	src.speakers = convert_speaker_layout((uint8_t)audio_data->channels);
 
 	dst.samples_per_sec = SAMPLE_RATE;
-	dst.format = AUDIO_FORMAT_FLOAT_PLANAR;
+	dst.format = AUDIO_FORMAT_16BIT;
 	dst.speakers = convert_speaker_layout((uint8_t)1);
 
 	audio_data->resampler_to_whisper = audio_resampler_create(&dst, &src); //RENAME: going to have to rename this later
@@ -204,7 +207,7 @@ void *transcript_plugin_create(obs_data_t *settings, obs_source_t *filter)
 	return audio_data;
 }
 
-void transcription_filter_destroy(void *data)
+void transcript_plugin_destroy(void *data)
 {
 	struct transcript_data *audio_data =
 		static_cast<struct transcript_data *>(data);
@@ -367,7 +370,7 @@ void transcript_plugin_update(void *data, obs_data_t *s) //Mostly do nothing rig
 }
 
 
-void transcription_filter_activate(void *data)
+void transcript_plugin_activate(void *data)
 {
 	struct transcript_data *audio_data =
 		static_cast<struct transcript_data *>(data);
@@ -375,7 +378,7 @@ void transcription_filter_activate(void *data)
 	audio_data->active = true;
 }
 
-void transcription_filter_deactivate(void *data)
+void transcript_plugin_deactivate(void *data)
 {
 	struct transcript_data *audio_data =
 		static_cast<struct transcript_data *>(data);

@@ -1,24 +1,29 @@
-#ifndef TRANSCRIPTPLUGIN_H
-#define TRANSCRIPTPLUGIN_H
+// #ifndef TRANSCRIPTPLUGIN_H
+// #define TRANSCRIPTPLUGIN_H
 
 
 
 #include <obs-module.h>
-#include "TranscriptPluginData.h"
+// #include "TranscriptPluginData.h"
 
 
-#include <thread>
-#include <memory>
-#include <mutex>
-#include <condition_variable>
-#include <functional>
-#include <string>
+// #include <thread>
+// #include <memory>
+// #include <mutex>
+// #include <condition_variable>
+// #include <functional>
+// #include <string>
+
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 #define MT_ obs_module_text
 
 #define info_log(format, ...) blog(LOG_INFO, format, ##__VA_ARGS__)
 
-#define SAMPLE_RATE 48000
+#define SAMPLE_RATE 16000
 #define MAX_MS_WORK_BUFFER 11000
 
 
@@ -32,5 +37,7 @@ void transcript_plugin_deactivate(void *data);
 void transcript_plugin_defaults(obs_data_t *s);
 obs_properties_t *transcript_plugin_properties(void *data);
 
-
-#endif //TRANSCRIPTPLUGIN_H
+#ifdef __cplusplus
+}
+#endif
+// #endif //TRANSCRIPTPLUGIN_H
