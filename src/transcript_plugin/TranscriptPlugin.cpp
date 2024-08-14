@@ -159,8 +159,8 @@ void *transcript_plugin_create(obs_data_t *settings, obs_source_t *filter)
 	dst.format = AUDIO_FORMAT_16BIT;
 	dst.speakers = convert_speaker_layout((uint8_t)1);
 
-	audio_data->resampler_to_whisper = audio_resampler_create(&dst, &src); //RENAME: going to have to rename this later
-	if (!audio_data->resampler_to_whisper) {
+	audio_data->resampler_to_deepgram = audio_resampler_create(&dst, &src); //RENAME: going to have to rename this later
+	if (!audio_data->resampler_to_deepgram) {
 		info_log( "Failed to create resampler");
 		audio_data->active = false;
 		return nullptr;
@@ -218,8 +218,8 @@ void transcript_plugin_destroy(void *data)
 	info_log("filter destroy");
 	// shutdown_whisper_thread(audio_data);
 
-	if (audio_data->resampler_to_whisper) {
-		audio_resampler_destroy(audio_data->resampler_to_whisper);
+	if (audio_data->resampler_to_deepgram) {
+		audio_resampler_destroy(audio_data->resampler_to_deepgram);
 	}
 
 	{
@@ -321,7 +321,7 @@ void transcript_plugin_update(void *data, obs_data_t *s) //Mostly do nothing rig
     info_log("Updating the plugin");
 	struct transcript_data *audio_data =
 		static_cast<struct transcript_data *>(data);
-	info_log( "LocalVocal filter update");
+	info_log( "Darwin Realtime filter update");
 
 	audio_data->log_level = (int)obs_data_get_int(s, "log_level");
 	audio_data->vad_enabled = obs_data_get_bool(s, "vad_enabled");

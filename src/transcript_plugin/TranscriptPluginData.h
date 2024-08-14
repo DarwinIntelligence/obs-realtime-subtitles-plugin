@@ -43,7 +43,7 @@ struct transcript_data {
 	// struct deque whisper_buffer;
 
 	/* Resampler */
-	audio_resampler_t *resampler_to_whisper;
+	audio_resampler_t *resampler_to_deepgram;
 	struct deque resampled_buffer;
 
 	/* whisper */
@@ -80,6 +80,10 @@ struct transcript_data {
 	bool initial_creation = true;
 	bool partial_transcription = false;
 	int partial_latency = 1000;
+
+
+	//DeepGram Info
+	// std::string
 
 	// Last transcription result
 	std::string last_text;
@@ -122,7 +126,7 @@ struct transcript_data {
 	// 		copy_buffers[i] = nullptr;
 	// 	}
 	// 	context = nullptr;
-	// 	resampler_to_whisper = nullptr;
+	// 	resampler_to_deepgram = nullptr;
 	// 	whisper_model_path = "";
 	// 	whisper_context = nullptr;
 	// 	output_file_path = "";
