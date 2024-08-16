@@ -8,7 +8,7 @@
 /// @brief set up the text source, including the format of the text itself as it will appear on the screen.
 void create_obs_text_source_if_needed()
 {
-	// check if a source called "LocalVocal Subtitles" exists
+	// check if a source called "Darwin Realtime Subtitles" exists
 	obs_source_t *source = obs_get_source_by_name("Darwin Realtime Subtitles");
 	if (source) {
 		// source already exists, release it
@@ -16,7 +16,7 @@ void create_obs_text_source_if_needed()
 		return;
 	}
 
-	// create a new OBS text source called "LocalVocal Subtitles"
+	// create a new OBS text source called "Darwin Realtime Subtitles"
 	obs_source_t *scene_as_source = obs_frontend_get_current_scene();
 	obs_scene_t *scene = obs_scene_from_source(scene_as_source);
 #ifdef _WIN32

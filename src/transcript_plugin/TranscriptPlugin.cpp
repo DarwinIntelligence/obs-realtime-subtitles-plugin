@@ -379,6 +379,10 @@ void transcript_plugin_update(void *data, obs_data_t *s) //Mostly do nothing rig
 			audio_data->initial_creation = false;
 		} 
 	}
+	else{
+		std::thread new_deepgram_thread(deepgram_loop,audio_data);
+		audio_data->deepgram_thread.swap(new_deepgram_thread);
+	}
 
 	
 }
