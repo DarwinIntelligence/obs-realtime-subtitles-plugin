@@ -71,6 +71,7 @@ void recording_state_callback(enum obs_frontend_event event, void *data)
 			output_file.close();
 			audio_data_->sentence_number = 1;
 			audio_data_->start_timestamp_ms = now_ms();
+            info_log("Here is the output file: %s", audio_data_->output_file_path.c_str());
 		}
 	} else if (event == OBS_FRONTEND_EVENT_RECORDING_STOPPED) {
 		if (audio_data_->save_srt && audio_data_->save_only_while_recording &&
@@ -85,6 +86,8 @@ void recording_state_callback(enum obs_frontend_event event, void *data)
 			std::string srt_file_name = recording_file_name + ".srt";
 			// rename the file
 			std::rename(audio_data_->output_file_path.c_str(), srt_file_name.c_str());
+            info_log("Here is the output file: %s", audio_data_->output_file_path.c_str());
+
 		}
 	}
 }

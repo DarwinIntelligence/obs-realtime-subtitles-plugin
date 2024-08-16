@@ -80,6 +80,7 @@ struct transcript_data {
 	bool initial_creation = true;
 	bool partial_transcription = false;
 	int partial_latency = 1000;
+	bool processed_succefully = false;
 
 
 	//DeepGram Info
@@ -99,7 +100,7 @@ struct transcript_data {
 	// bool whisper_model_loaded_new;
 
 	// Use std for thread and mutex
-	// std::thread whisper_thread;
+	std::thread deepgram_thread;
 
 	// std::mutex whisper_buf_mutex;
 	// std::mutex whisper_ctx_mutex;

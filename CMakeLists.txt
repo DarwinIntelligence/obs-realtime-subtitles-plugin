@@ -44,6 +44,8 @@ file(GLOB Transcript src/transcript_plugin/*.cpp)
 
 file(GLOB CFile src/transcript_plugin/*.c)
 
-target_sources(${CMAKE_PROJECT_NAME} PRIVATE src/obs_realtime_subtitles_plugin.cpp ${Plugin} ${Window} ${Transcript} ${CFile})
+file(GLOB Deepgram src/deepgram/*.cpp)
+
+target_sources(${CMAKE_PROJECT_NAME} PRIVATE src/obs_realtime_subtitles_plugin.cpp ${Plugin} ${Window} ${Transcript} ${CFile} ${Deepgram})
 
 set_target_properties_plugin(${CMAKE_PROJECT_NAME} PROPERTIES OUTPUT_NAME ${_name})

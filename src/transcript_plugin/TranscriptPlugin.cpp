@@ -2,6 +2,7 @@
 #include "TranscriptPluginData.h"
 #include "TranscriptPluginCallbacks.h"
 #include "TranscriptPluginUtils.h"
+#include "DeepGramProcessing.h"
 
 #include <obs-module.h>
 
@@ -364,6 +365,19 @@ void transcript_plugin_update(void *data, obs_data_t *s) //Mostly do nothing rig
 		} else {
 			info_log( "output file path is empty, but selected to save");
 		}
+	}
+
+	if (audio_data->context != nullptr && obs_source_enabled(audio_data->context)) {
+		if (audio_data->initial_creation) {
+			info_log("Initial filter creation and source enabled");
+
+			// source was enabled on creation
+			std::thread new_deepgram_thread(deepgram_loop,audio_data);
+			audio_data->deepgram_thread.swap(new_deepgram_thread);
+			
+			audio_data->active = true;
+			audio_data->initial_creation = false;
+		} 
 	}
 
 	
