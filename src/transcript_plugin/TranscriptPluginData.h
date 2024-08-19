@@ -22,9 +22,9 @@ struct transcript_data {
 	obs_source_t *context; // obs filter source (technically, this is a filter. We take the audio, store it, but don't do anything to it here. )
 	size_t channels;       // number of channels
 	uint32_t sample_rate;  // input sample rate
-	// How many input frames (in input sample rate) are needed for the next whisper frame
+	// How many input frames (in input sample rate) are needed for the next deepgram frame
 	size_t frames;
-	// How many frames were processed in the last whisper frame (this is dynamic)
+	// How many frames were processed in the last deepgram frame (this is dynamic)
 	size_t last_num_frames;
 	// Start begining timestamp in ms since epoch
 	uint64_t start_timestamp_ms;
@@ -80,7 +80,7 @@ struct transcript_data {
 	bool initial_creation = true;
 	bool partial_transcription = false;
 	int partial_latency = 1000;
-	bool processed_succefully = false;
+	bool processed_successfully = false;
 
 
 	//DeepGram Info
@@ -102,8 +102,8 @@ struct transcript_data {
 	// Use std for thread and mutex
 	std::thread deepgram_thread;
 
-	// std::mutex whisper_buf_mutex;
-	// std::mutex whisper_ctx_mutex;
+	std::mutex deepgram_buf_mutex;
+	std::mutex deepgram_ctx_mutex;
 	// std::condition_variable wshiper_thread_cv;
 
 	// translation context

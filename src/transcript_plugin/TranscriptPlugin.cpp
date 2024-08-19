@@ -46,7 +46,7 @@ void disconnect_source_signals(transcript_data *audio_data, obs_source_t *parent
 
 struct obs_audio_data *transcript_plugin_filter_audio(void *data, struct obs_audio_data *audio)
 {
-	info_log("filtering audio");
+	// info_log("filtering audio");
     if (!audio){
         return nullptr;
     }
@@ -81,10 +81,10 @@ struct obs_audio_data *transcript_plugin_filter_audio(void *data, struct obs_aud
 		}    
     }
     {
+		std::lock_guard<std::mutex> lock(audio_data->deepgram_buf_mutex);
         // check each channel and push the audio data into 
         for (size_t c = 0; c < audio_data->channels; c++){
             deque_push_back(&audio_data->input_buffers[c], audio->data[c], audio->frames * sizeof(float));
-                
 
         }
 
@@ -380,6 +380,7 @@ void transcript_plugin_update(void *data, obs_data_t *s) //Mostly do nothing rig
 		} 
 	}
 	else{
+		info_log("Creating new deepgram thread");
 		std::thread new_deepgram_thread(deepgram_loop,audio_data);
 		audio_data->deepgram_thread.swap(new_deepgram_thread);
 	}
