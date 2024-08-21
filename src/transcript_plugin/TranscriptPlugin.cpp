@@ -6,6 +6,8 @@
 
 #include <obs-module.h>
 
+
+
 #include <algorithm>
 #include <fstream>
 #include <sstream>
@@ -18,27 +20,27 @@
 #endif
 
 
-void set_source_signals(transcript_data *audio_data, obs_source_t *parent_source)
-{
-	signal_handler_t *sh = obs_source_get_signal_handler(parent_source);
-	signal_handler_connect(sh, "media_play", media_play_callback, audio_data);
-	signal_handler_connect(sh, "media_started", media_started_callback, audio_data);
-	signal_handler_connect(sh, "media_pause", media_pause_callback, audio_data);
-	signal_handler_connect(sh, "media_restart", media_restart_callback, audio_data);
-	signal_handler_connect(sh, "media_stopped", media_stopped_callback, audio_data);
-	audio_data->source_signals_set = true;
-}
+// void set_source_signals(transcript_data *audio_data, obs_source_t *parent_source)
+// {
+// 	signal_handler_t *sh = obs_source_get_signal_handler(parent_source);
+// 	signal_handler_connect(sh, "media_play", media_play_callback, audio_data);
+// 	signal_handler_connect(sh, "media_started", media_started_callback, audio_data);
+// 	signal_handler_connect(sh, "media_pause", media_pause_callback, audio_data);
+// 	signal_handler_connect(sh, "media_restart", media_restart_callback, audio_data);
+// 	signal_handler_connect(sh, "media_stopped", media_stopped_callback, audio_data);
+// 	audio_data->source_signals_set = true;
+// }
 
-void disconnect_source_signals(transcript_data *audio_data, obs_source_t *parent_source)
-{
-	signal_handler_t *sh = obs_source_get_signal_handler(parent_source);
-	signal_handler_disconnect(sh, "media_play", media_play_callback, audio_data);
-	signal_handler_disconnect(sh, "media_started", media_started_callback, audio_data);
-	signal_handler_disconnect(sh, "media_pause", media_pause_callback, audio_data);
-	signal_handler_disconnect(sh, "media_restart", media_restart_callback, audio_data);
-	signal_handler_disconnect(sh, "media_stopped", media_stopped_callback, audio_data);
-	audio_data->source_signals_set = false;
-}
+// void disconnect_source_signals(transcript_data *audio_data, obs_source_t *parent_source)
+// {
+// 	signal_handler_t *sh = obs_source_get_signal_handler(parent_source);
+// 	signal_handler_disconnect(sh, "media_play", media_play_callback, audio_data);
+// 	signal_handler_disconnect(sh, "media_started", media_started_callback, audio_data);
+// 	signal_handler_disconnect(sh, "media_pause", media_pause_callback, audio_data);
+// 	signal_handler_disconnect(sh, "media_restart", media_restart_callback, audio_data);
+// 	signal_handler_disconnect(sh, "media_stopped", media_stopped_callback, audio_data);
+// 	audio_data->source_signals_set = false;
+// }
 
 
 
@@ -46,6 +48,8 @@ void disconnect_source_signals(transcript_data *audio_data, obs_source_t *parent
 
 struct obs_audio_data *transcript_plugin_filter_audio(void *data, struct obs_audio_data *audio)
 {
+
+	info_log("Heres how many audio frames we got %u", audio->frames);
 	// info_log("filtering audio");
     if (!audio){
         return nullptr;
@@ -55,17 +59,19 @@ struct obs_audio_data *transcript_plugin_filter_audio(void *data, struct obs_aud
         return audio;
     }
 
+	
+
     struct transcript_data *audio_data = static_cast<struct transcript_data *>(data);
 
 
-    //Init of source sigs
-    if (!audio_data->source_signals_set) {
-		// obs_filter_get_parent only works in the filter function
-		obs_source_t *parent_source = obs_filter_get_parent(audio_data->context);
-		if (parent_source != nullptr) {
-			set_source_signals(audio_data, parent_source);
-		}
-	}
+    // //Init of source sigs
+    // if (!audio_data->source_signals_set) {
+	// 	// obs_filter_get_parent only works in the filter function
+	// 	obs_source_t *parent_source = obs_filter_get_parent(audio_data->context);
+	// 	if (parent_source != nullptr) {
+	// 		set_source_signals(audio_data, parent_source);
+	// 	}
+	// }
 
     if(!audio_data->active){
         return audio;
@@ -80,19 +86,44 @@ struct obs_audio_data *transcript_plugin_filter_audio(void *data, struct obs_aud
 			return audio;
 		}    
     }
-    {
-		std::lock_guard<std::mutex> lock(audio_data->deepgram_buf_mutex);
-        // check each channel and push the audio data into 
-        for (size_t c = 0; c < audio_data->channels; c++){
-            deque_push_back(&audio_data->input_buffers[c], audio->data[c], audio->frames * sizeof(float));
+    // {
+	// 	std::lock_guard<std::mutex> lock(audio_data->deepgram_buf_mutex);
+    //     // check each channel and push the audio data into 
+    //     for (size_t c = 0; c < audio_data->channels; c++){
+    //         obs_deque_push_back(&audio_data->input_buffers[c], audio->data[c], audio->frames * sizeof(int));
 
-        }
+    //     }
 
-        struct transcript_audio_info info = {0};
-        info.frames = audio->frames; //number of frames in the audio packet
-        info.timestamp_offset_ns = now_ns() - audio_data->start_timestamp_ms * 1000000; //the current offset in ns
-        deque_push_back(&audio_data->info_buffer, &info, sizeof(info));//push all of the info into the shared deque so we can use it outside of this function
-    }
+    //     struct transcript_audio_info info = {0};
+    //     info.frames = audio->frames; //number of frames in the audio packet
+    //     info.timestamp_offset_ns = now_ns() - audio_data->start_timestamp_ms * 1000000; //the current offset in ns
+    //     obs_deque_push_back(&audio_data->info_buffer, &info, sizeof(info));//push all of the info into the shared obs_deque so we can use it outside of this function
+    // }
+
+	
+
+	info_log("Here is our endpoint %d", audio_data->endpoint_id);
+	
+	
+	if(audio_data->endpoint != NULL){
+		if (audio != NULL){
+			uint16_t *i16_audio = (uint16_t *)malloc(audio->frames * sizeof(float)/2); //I believe it is divided by two because the size of float is 32 bits and we want 16? 
+			for (u_int i = 0; i < audio->frames; i++) {
+					float sample_float;
+					memcpy(&sample_float,
+						&audio->data[0]
+								[0 + i * sizeof(float)],
+						sizeof(float));
+					i16_audio[i] = f32_to_i16(sample_float);
+				}
+			info_log("Sending the binary");
+			audio_data->endpoint->send_binary(
+				audio_data->endpoint_id, i16_audio, audio->frames * sizeof(float) / 2);
+			info_log("After the Bin has been sent");
+			free(i16_audio);
+		
+		}
+	}
     
     return audio; //at the end, let the audio pass through to be taken care of by OBS
 }
@@ -117,24 +148,24 @@ void *transcript_plugin_create(obs_data_t *settings, obs_source_t *filter)
 	audio_data->last_num_frames = 0;
 	audio_data->min_sub_duration = (int)obs_data_get_int(settings, "min_sub_duration");
 	audio_data->last_sub_render_time = now_ms();
-	audio_data->log_level = (int)obs_data_get_int(settings, "log_level");
-	audio_data->save_srt = obs_data_get_bool(settings, "subtitle_save_srt");
-	audio_data->truncate_output_file = obs_data_get_bool(settings, "truncate_output_file");
-	audio_data->save_only_while_recording = obs_data_get_bool(settings, "only_while_recording");
-	audio_data->rename_file_to_match_recording =
-		obs_data_get_bool(settings, "rename_file_to_match_recording");
+	// audio_data->log_level = (int)obs_data_get_int(settings, "log_level");
+	// audio_data->save_srt = obs_data_get_bool(settings, "subtitle_save_srt");
+	// audio_data->truncate_output_file = obs_data_get_bool(settings, "truncate_output_file");
+	// audio_data->save_only_while_recording = obs_data_get_bool(settings, "only_while_recording");
+	// audio_data->rename_file_to_match_recording =
+	// 	obs_data_get_bool(settings, "rename_file_to_match_recording");
 	audio_data->process_while_muted = obs_data_get_bool(settings, "process_while_muted");
-	audio_data->buffered_output = obs_data_get_bool(settings, "buffered_output");
+	// audio_data->buffered_output = obs_data_get_bool(settings, "buffered_output");
 
     for (size_t i = 0; i < audio_data->channels; i++) {
-		deque_init(&audio_data->input_buffers[i]);
+		obs_deque_init(&audio_data->input_buffers[i]);
 	}
-	deque_init(&audio_data->info_buffer);
-	deque_init(&audio_data->resampled_buffer);
+	obs_deque_init(&audio_data->info_buffer);
+	obs_deque_init(&audio_data->resampled_buffer);
 
     // allocate copy buffers
 	audio_data->copy_buffers[0] =
-		static_cast<float *>(bzalloc(audio_data->channels * audio_data->frames * sizeof(float)));
+		static_cast<int *>(bzalloc(audio_data->channels * audio_data->frames * sizeof(int)));
 	if (audio_data->copy_buffers[0] == nullptr) {
 		info_log("Failed to allocate copy buffer");
 		audio_data->active = false;
@@ -143,7 +174,7 @@ void *transcript_plugin_create(obs_data_t *settings, obs_source_t *filter)
 	for (size_t c = 1; c < audio_data->channels; c++) { // set the channel pointers
 		audio_data->copy_buffers[c] = audio_data->copy_buffers[0] + c * audio_data->frames;
 	}
-	memset(audio_data->copy_buffers[0], 0, audio_data->channels * audio_data->frames * sizeof(float));
+	memset(audio_data->copy_buffers[0], 0, audio_data->channels * audio_data->frames * sizeof(int));
 
 	audio_data->context = filter; //technically, this is a filter. We take the audio, store it, but don't do anything to it here. 
 
@@ -153,7 +184,7 @@ void *transcript_plugin_create(obs_data_t *settings, obs_source_t *filter)
 	info_log( "setup audio resampler");
 	struct resample_info src, dst;
 	src.samples_per_sec = audio_data->sample_rate;
-	src.format = AUDIO_FORMAT_16BIT;
+	src.format = AUDIO_FORMAT_FLOAT_PLANAR;
 	src.speakers = convert_speaker_layout((uint8_t)audio_data->channels);
 
 	dst.samples_per_sec = SAMPLE_RATE;
@@ -228,12 +259,12 @@ void transcript_plugin_destroy(void *data)
 		bfree(audio_data->copy_buffers[0]);
 		audio_data->copy_buffers[0] = nullptr;
 		for (size_t i = 0; i < audio_data->channels; i++) {
-			deque_free(&audio_data->input_buffers[i]);
+			obs_deque_free(&audio_data->input_buffers[i]);
 		}
 	}
-	deque_free(&audio_data->info_buffer);
+	obs_deque_free(&audio_data->info_buffer);
 
-	deque_free(&audio_data->resampled_buffer);
+	obs_deque_free(&audio_data->resampled_buffer);
 
 	// if (audio_data->captions_monitor.isEnabled()) {
 	// 	audio_data->captions_monitor.stopThread();
@@ -256,13 +287,10 @@ void transcript_plugin_defaults(obs_data_t *s)
 	// obs_data_set_default_int(s, "buffer_output_type",
 	// 			 (int)TokenBufferSegmentation::SEGMENTATION_TOKEN);
 
-	obs_data_set_default_bool(s, "vad_enabled", true);
-	obs_data_set_default_double(s, "vad_threshold", 0.65);
+
 	obs_data_set_default_int(s, "log_level", LOG_DEBUG);
 	obs_data_set_default_bool(s, "log_words", false);
 	obs_data_set_default_bool(s, "caption_to_stream", false);
-	obs_data_set_default_string(s, "whisper_model_path", "Whisper Tiny English (74Mb)");
-	obs_data_set_default_string(s, "whisper_language_select", "en");
 	obs_data_set_default_string(s, "subtitle_sources", "none");
 	obs_data_set_default_bool(s, "process_while_muted", false);
 	obs_data_set_default_bool(s, "subtitle_save_srt", false);
@@ -274,12 +302,10 @@ void transcript_plugin_defaults(obs_data_t *s)
 	obs_data_set_default_bool(s, "translate", false);
 	obs_data_set_default_string(s, "translate_target_language", "__es__");
 	obs_data_set_default_bool(s, "translate_add_context", true);
-	// obs_data_set_default_string(s, "translate_model", "whisper-based-translation");
 	obs_data_set_default_string(s, "translation_model_path_external", "");
-	// obs_data_set_default_int(s, "translate_input_tokenization_style", INPUT_TOKENIZAION_M2M100);
 	obs_data_set_default_double(s, "sentence_psum_accept_thresh", 0.4);
-	obs_data_set_default_bool(s, "partial_group", false);
-	obs_data_set_default_int(s, "partial_latency", 1100);
+	// obs_data_set_default_bool(s, "partial_group", false);
+	// obs_data_set_default_int(s, "partial_latency", 1100);
 
 	// // translation options
 	// obs_data_set_default_double(s, "translation_sampling_temperature", 0.1);
@@ -289,30 +315,6 @@ void transcript_plugin_defaults(obs_data_t *s)
 	// obs_data_set_default_int(s, "translation_no_repeat_ngram_size", 1);
 	// obs_data_set_default_int(s, "translation_max_input_length", 65);
 
-	// // Whisper parameters
-	// obs_data_set_default_int(s, "whisper_sampling_method", WHISPER_SAMPLING_BEAM_SEARCH);
-	// obs_data_set_default_string(s, "initial_prompt", "");
-	// obs_data_set_default_int(s, "n_threads", 4);
-	// obs_data_set_default_int(s, "n_max_text_ctx", 16384);
-	// obs_data_set_default_bool(s, "whisper_translate", false);
-	// obs_data_set_default_bool(s, "no_context", true);
-	// obs_data_set_default_bool(s, "single_segment", true);
-	// obs_data_set_default_bool(s, "print_special", false);
-	// obs_data_set_default_bool(s, "print_progress", false);
-	// obs_data_set_default_bool(s, "print_realtime", false);
-	// obs_data_set_default_bool(s, "print_timestamps", false);
-	// obs_data_set_default_bool(s, "token_timestamps", false);
-	// obs_data_set_default_bool(s, "dtw_token_timestamps", false);
-	// obs_data_set_default_double(s, "thold_pt", 0.01);
-	// obs_data_set_default_double(s, "thold_ptsum", 0.01);
-	// obs_data_set_default_int(s, "max_len", 0);
-	// obs_data_set_default_bool(s, "split_on_word", true);
-	// obs_data_set_default_int(s, "max_tokens", 0);
-	// obs_data_set_default_bool(s, "suppress_blank", false);
-	// obs_data_set_default_bool(s, "suppress_non_speech_tokens", true);
-	// obs_data_set_default_double(s, "temperature", 0.1);
-	// obs_data_set_default_double(s, "max_initial_ts", 1.0);
-	// obs_data_set_default_double(s, "length_penalty", -1.0);
 }
 
 
@@ -324,9 +326,9 @@ void transcript_plugin_update(void *data, obs_data_t *s) //Mostly do nothing rig
 		static_cast<struct transcript_data *>(data);
 	info_log( "Darwin Realtime filter update");
 
-	audio_data->log_level = (int)obs_data_get_int(s, "log_level");
-	audio_data->vad_enabled = obs_data_get_bool(s, "vad_enabled");
-	audio_data->log_words = obs_data_get_bool(s, "log_words");
+	// audio_data->log_level = (int)obs_data_get_int(s, "log_level");
+	// audio_data->vad_enabled = obs_data_get_bool(s, "vad_enabled");
+	// audio_data->log_words = obs_data_get_bool(s, "log_words");
 	audio_data->caption_to_stream = obs_data_get_bool(s, "caption_to_stream");
 	audio_data->save_to_file = obs_data_get_bool(s, "file_output_enable");
 	audio_data->save_srt = obs_data_get_bool(s, "subtitle_save_srt");
@@ -339,8 +341,26 @@ void transcript_plugin_update(void *data, obs_data_t *s) //Mostly do nothing rig
 	audio_data->process_while_muted = obs_data_get_bool(s, "process_while_muted");
 	audio_data->min_sub_duration = (int)obs_data_get_int(s, "min_sub_duration");
 	audio_data->last_sub_render_time = now_ms();
-	audio_data->partial_transcription = obs_data_get_bool(s, "partial_group");
-	audio_data->partial_latency = (int)obs_data_get_int(s, "partial_latency");
+	// audio_data->partial_transcription = obs_data_get_bool(s, "partial_group");
+	// audio_data->partial_latency = (int)obs_data_get_int(s, "partial_latency");
+	audio_data->endpoint = new WebsocketEndpoint();
+	audio_data->endpoint_id = audio_data->endpoint->connect(
+	// 			"wss://api.deepgram.com/v1/listen?language=en&model=general-enhanced&tier=enhanced&encoding=linear16&sample_rate=44100",
+				// audio_data->api_key);
+				"wss://deepgram.darwinai.link/v1/listen?language=ko&model=nova-2-general&encoding=linear16&sample_rate=44100", ""); //Darwins
+	
+	
+	// WebsocketEndpoint *endpoint = new WebsocketEndpoint();
+
+	// int endpoint_id = endpoint->connect(
+	// // 			"wss://api.deepgram.com/v1/listen?language=en&model=general-enhanced&tier=enhanced&encoding=linear16&sample_rate=44100",
+	// 			// audio_data->api_key);
+	// 			"wss://deepgram.darwinai.link/v1/listen?language=ko&model=nova-2-general&encoding=linear16&sample_rate=44100", ""); //Darwins
+	// 			//language=en&model=general-enhanced&tier=enhanced
+
+	
+	// audio_data->endpoint_id = endpoint_id;
+	// audio_data->endpoint = endpoint;
 	// bool new_buffered_output = obs_data_get_bool(s, "buffered_output");
 	// int new_buffer_num_lines = (int)obs_data_get_int(s, "buffer_num_lines");
 	// int new_buffer_num_chars_per_line = (int)obs_data_get_int(s, "buffer_num_chars_per_line");
@@ -403,4 +423,16 @@ void transcript_plugin_deactivate(void *data)
 		static_cast<struct transcript_data *>(data);
 	info_log( "filter deactivated");
 	audio_data->active = false;
+}
+
+int16_t f32_to_i16(float f)
+{
+	f = f * 32768;
+	if (f > 32767) {
+		return 32767;
+	}
+	if (f < -32768) {
+		return -32768;
+	}
+	return (int16_t)f;
 }

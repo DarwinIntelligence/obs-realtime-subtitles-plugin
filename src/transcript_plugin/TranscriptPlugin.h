@@ -36,6 +36,8 @@ struct obs_audio_data *transcript_plugin_filter_audio(void *data, struct obs_aud
 void transcript_plugin_deactivate(void *data);
 void transcript_plugin_defaults(obs_data_t *s);
 obs_properties_t *transcript_plugin_properties(void *data);
+int16_t f32_to_i16(float f);
+
 
 #ifdef __cplusplus
 }

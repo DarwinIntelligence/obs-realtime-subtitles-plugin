@@ -27,10 +27,12 @@ void send_caption_to_source(const std::string &target_source_name, const std::st
 		info_log( "text_source target is null");
 		return;
 	}
+
 	auto text_settings = obs_source_get_settings(target);
 	obs_data_set_string(text_settings, "text", caption.c_str());
 	obs_source_update(target, text_settings);
 	obs_source_release(target);
+	info_log("We should be printing this but it is Korean %s", caption.c_str());
 }
 
 void reset_caption_state(transcript_data *gf_)
@@ -46,14 +48,14 @@ void reset_caption_state(transcript_data *gf_)
 		// std::lock_guard<std::mutex> lock(gf_->whisper_buf_mutex);
 		for (size_t c = 0; c < gf_->channels; c++) {
 			if (gf_->input_buffers[c].data != nullptr) {
-				deque_free(&gf_->input_buffers[c]);
+				obs_deque_free(&gf_->input_buffers[c]);
 			}
 		}
 		if (gf_->info_buffer.data != nullptr) {
-			deque_free(&gf_->info_buffer);
+			obs_deque_free(&gf_->info_buffer);
 		}
 		// if (gf_->whisper_buffer.data != nullptr) {
-		// 	deque_free(&gf_->whisper_buffer);
+		// 	obs_deque_free(&gf_->whisper_buffer);
 		// }
 	}
 }

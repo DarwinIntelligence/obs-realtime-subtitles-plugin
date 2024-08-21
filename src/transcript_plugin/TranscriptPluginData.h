@@ -5,6 +5,8 @@
 #include <util/darray.h>
 #include <media-io/audio-resampler.h>
 
+#include "WebsocketEndpoint.h"
+#include "nlohmann/json.hpp"
 
 #include <thread>
 #include <memory>
@@ -19,6 +21,14 @@
 #define MAX_PREPROC_CHANNELS 10
 
 struct transcript_data {
+
+
+	WebsocketEndpoint *endpoint;
+	int endpoint_id;
+	std::string api_key = "60f33262bcddea4d1fd5b60eee42c79a6d9806b3";
+	std::string transcript;
+
+
 	obs_source_t *context; // obs filter source (technically, this is a filter. We take the audio, store it, but don't do anything to it here. )
 	size_t channels;       // number of channels
 	uint32_t sample_rate;  // input sample rate
@@ -37,14 +47,14 @@ struct transcript_data {
 	bool cleared_last_sub;
 
 	/* PCM buffers */
-	float *copy_buffers[MAX_PREPROC_CHANNELS];
-	struct deque info_buffer;
-	struct deque input_buffers[MAX_PREPROC_CHANNELS];
-	// struct deque whisper_buffer;
+	int *copy_buffers[MAX_PREPROC_CHANNELS];
+	struct obs_deque info_buffer;
+	struct obs_deque input_buffers[MAX_PREPROC_CHANNELS];
+	// struct obs_deque whisper_buffer;
 
 	/* Resampler */
 	audio_resampler_t *resampler_to_deepgram;
-	struct deque resampled_buffer;
+	struct obs_deque resampled_buffer;
 
 	/* whisper */
 	// std::string whisper_model_path;
@@ -58,9 +68,6 @@ struct transcript_data {
 	float sentence_psum_accept_thresh;
 
 	bool do_silence;
-	bool vad_enabled;
-	int log_level = LOG_DEBUG;
-	bool log_words;
 	bool caption_to_stream;
 	bool active = false;
 	bool save_to_file = false;
@@ -72,14 +79,7 @@ struct transcript_data {
 	bool translate = false;
 	std::string target_lang;
 	std::string translation_output;
-	bool enable_token_ts_dtw = false;
-	std::vector<std::tuple<std::string, std::string>> filter_words_replace;
-	bool fix_utf8 = true;
-	bool enable_audio_chunks_callback = false;
-	bool source_signals_set = false;
 	bool initial_creation = true;
-	bool partial_transcription = false;
-	int partial_latency = 1000;
 	bool processed_successfully = false;
 
 
@@ -87,8 +87,7 @@ struct transcript_data {
 	// std::string
 
 	// Last transcription result
-	std::string last_text;
-	std::string last_text_translation;
+	
 
 	// Text source to output the subtitles
 	std::string text_source_name;
@@ -102,8 +101,8 @@ struct transcript_data {
 	// Use std for thread and mutex
 	std::thread deepgram_thread;
 
-	std::mutex deepgram_buf_mutex;
-	std::mutex deepgram_ctx_mutex;
+	// std::mutex deepgram_buf_mutex;
+	// std::mutex deepgram_ctx_mutex;
 	// std::condition_variable wshiper_thread_cv;
 
 	// translation context
@@ -111,11 +110,11 @@ struct transcript_data {
 	// std::string translation_model_index;
 	// std::string translation_model_path_external;
 
-	bool buffered_output = false;
-	// TokenBufferThread captions_monitor;
-	// TokenBufferThread translation_monitor;
-	int buffered_output_num_lines = 2;
-	int buffered_output_num_chars = 30;
+	// bool buffered_output = false;
+	// // TokenBufferThread captions_monitor;
+	// // TokenBufferThread translation_monitor;
+	// int buffered_output_num_lines = 2;
+	// int buffered_output_num_chars = 30;
 	// TokenBufferSegmentation buffered_output_output_type =
 	// 	TokenBufferSegmentation::SEGMENTATION_TOKEN;
 
