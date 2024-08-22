@@ -3,6 +3,8 @@
 
 #include <curl/curl.h>
 #include "TranscriptPluginCallbacks.h"
+#include <iostream>
+#include <fstream>
 
 
 void deepgram_loop(void *data){
@@ -35,15 +37,16 @@ void deepgram_loop(void *data){
                         std::string combined =
                             dg->transcript + transcript;
                         if (combined.length() <
-                            20) {
+                            20) { //This is arbitrary I need to change this to a real number.
                             dg->transcript = combined;
                         } else {
                             dg->transcript = transcript;
                         }
+                        send_caption_to_source("Darwin Realtime Subtitles", dg->transcript.c_str());
+                        
                     }
                 }
             }
-            send_caption_to_source("Darwin Realtime Subtitles", dg->transcript.c_str());
             // info_log("Transcript from deepgram_loop %s", dg->transcript.c_str());
         }
         // size_t input_buf_size = 0;

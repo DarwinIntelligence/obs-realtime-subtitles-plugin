@@ -70,7 +70,7 @@ struct transcript_data {
 	bool do_silence;
 	bool caption_to_stream;
 	bool active = false;
-	bool save_to_file = false;
+	bool save_to_file = true;
 	bool save_srt = false;
 	bool truncate_output_file = false;
 	bool save_only_while_recording = false;

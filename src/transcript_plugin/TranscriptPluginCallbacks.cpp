@@ -19,6 +19,8 @@
 
 void send_caption_to_source(const std::string &target_source_name, const std::string &caption)
 {
+	std::ofstream transcriptFile;
+
 	if (target_source_name.empty()) {
 		return;
 	}
@@ -33,6 +35,9 @@ void send_caption_to_source(const std::string &target_source_name, const std::st
 	obs_source_update(target, text_settings);
 	obs_source_release(target);
 	info_log("We should be printing this but it is Korean %s", caption.c_str());
+	info_log("Opening transcript");
+	transcriptFile.open("/home/nolan/transcript.txt", std::ios_base::app);
+	transcriptFile << caption;
 }
 
 void reset_caption_state(transcript_data *gf_)

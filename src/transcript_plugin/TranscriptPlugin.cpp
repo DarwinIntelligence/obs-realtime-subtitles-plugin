@@ -49,7 +49,7 @@
 struct obs_audio_data *transcript_plugin_filter_audio(void *data, struct obs_audio_data *audio)
 {
 
-	info_log("Heres how many audio frames we got %u", audio->frames);
+	// info_log("Heres how many audio frames we got %u", audio->frames);
 	// info_log("filtering audio");
     if (!audio){
         return nullptr;
@@ -102,7 +102,6 @@ struct obs_audio_data *transcript_plugin_filter_audio(void *data, struct obs_aud
 
 	
 
-	info_log("Here is our endpoint %d", audio_data->endpoint_id);
 	
 	
 	if(audio_data->endpoint != NULL){
@@ -116,10 +115,8 @@ struct obs_audio_data *transcript_plugin_filter_audio(void *data, struct obs_aud
 						sizeof(float));
 					i16_audio[i] = f32_to_i16(sample_float);
 				}
-			info_log("Sending the binary");
 			audio_data->endpoint->send_binary(
 				audio_data->endpoint_id, i16_audio, audio->frames * sizeof(float) / 2);
-			info_log("After the Bin has been sent");
 			free(i16_audio);
 		
 		}
