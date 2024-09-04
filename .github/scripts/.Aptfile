@@ -6,3 +6,4 @@ package 'ninja-build', bin: 'ninja'
 package 'pkg-config'
 package 'libssl-dev'
 package 'libboost-all-dev=1.74.0.3ubuntu7'
+package 'libcurl

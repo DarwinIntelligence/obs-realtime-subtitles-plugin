@@ -8,7 +8,7 @@ param(
     [switch] $SkipBuild,
     [switch] $SkipDeps,
     [string] $BoostVersion = '1_74_0',
-    [string] $BoostDirectory = 'C:\Boost'
+    [string] $BoostDirectory = 'D:\a\Boost'
 )
 
 $ErrorActionPreference = 'Stop'
