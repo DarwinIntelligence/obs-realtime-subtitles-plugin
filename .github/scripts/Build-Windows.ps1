@@ -57,6 +57,8 @@ function Build-Boost {
 
     Push-Location -Path $BoostPath
 
+    .\bootstrap.bat
+
     Write-Host "Building Boost..."
     & .\b2 || {
         Write-Error "Boost build failed."
