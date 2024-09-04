@@ -7,7 +7,6 @@ param(
     [switch] $SkipAll,
     [switch] $SkipBuild,
     [switch] $SkipDeps,
-    [string] $BoostVersion = '1_74_0',
     [string] $BoostDirectory = 'D:\a\Boost'
 )
 
@@ -33,9 +32,9 @@ function Download-Boost {
         [string] $Destination
     )
 
-    $BoostUrl = "https://archives.boost.io/release/${Version}/source/boost_${Version}.zip"
-    $BoostZip = "${Destination}\boost_${Version}.zip"
-    $BoostExtractPath = "${Destination}\boost_${Version}"
+    $BoostUrl = "https://archives.boost.io/release/1.74.0/source/boost_1_74_0.zip"
+    $BoostZip = "${Destination}\boost_1_74_0.zip"
+    $BoostExtractPath = "${Destination}\boost_1_74_0"
 
     if (-Not (Test-Path -Path $BoostExtractPath)) {
         Write-Host "Downloading Boost ${Version}..."
@@ -96,7 +95,7 @@ function Build {
     }
 
     # Download and build Boost
-    $BoostPath = Download-Boost -Version $BoostVersion -Destination $BoostDirectory
+    $BoostPath = Download-Boost -Destination $BoostDirectory
     Build-Boost -BoostPath $BoostPath
 
     Push-Location -Stack BuildTemp
