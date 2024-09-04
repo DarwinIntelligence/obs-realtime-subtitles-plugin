@@ -1,23 +1,22 @@
 #include <QAction>
 
 #include <MainWindow.h>
+#include <obs-source.h>
 #include <obs-module.h>
 #include <PluginSupport.h>
-#include <obs-source.h>
 #include <GUIDock.h>
-#include <PluginManager.h>
 #include "transcript_plugin/TranscriptPlugin.h"
 #include "transcript_plugin/TranscriptPluginCallbacks.h"
 #include "transcript_plugin/TranscriptPluginData.h"
 #include "transcript_plugin/TranscriptPluginUtils.h"
+#include "UIConstants.h"
 
 OBS_DECLARE_MODULE();
-OBS_MODULE_USE_DEFAULT_LOCALE(PLUGIN_NAME, "en-US");
+OBS_MODULE_USE_DEFAULT_LOCALE(PLUGIN_NAME, "en-GB");
 
 OBS_MODULE_AUTHOR("DarwinIntelligence");
 
 MainWindow *mainWindow = nullptr;
-PluginManager *plugin_manager = nullptr;
 GUIDock *dock = nullptr;
 
 void menu_clicked()
@@ -32,15 +31,19 @@ extern struct obs_source_info transcript_plugin_info;
 
 bool obs_module_load(void)
 {
-	info_log( "plugin loaded successfully (version %s)", PLUGIN_VERSION);
-	mainWindow = new MainWindow();
-	QAction *action = (QAction *) obs_frontend_add_tools_menu_qaction("RealTime Subtitles");
-    action->connect(action, &QAction::triggered, &menu_clicked);
+	info_log("plugin loaded successfully (version %s)", PLUGIN_VERSION);
+	const auto main_window =
+		static_cast<QMainWindow *>(obs_frontend_get_main_window());
+	obs_frontend_push_ui_translation(obs_module_get_string);
 
-	dock = new GUIDock();
-    obs_frontend_add_dock_by_id("0", "RealTime Subtitles", dock);
+	mainWindow = new MainWindow(main_window);
+	QAction *action = (QAction *) obs_frontend_add_tools_menu_qaction(T_WINDOW_TITLE);
+	action->connect(action, &QAction::triggered, &menu_clicked);
+
+	dock = new GUIDock(main_window);
+	obs_frontend_add_custom_qdock("0", dock);
 	obs_register_source(&transcript_plugin_info);
-	info_log("Returning True");
+	obs_frontend_pop_ui_translation();
 	return true;
 }
 
