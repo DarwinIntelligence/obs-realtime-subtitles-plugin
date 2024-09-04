@@ -16,8 +16,6 @@ void deepgram_loop(void *data){
 
     struct transcript_data *dg = static_cast<struct transcript_data *>(data);
 
-
-
     //get all the info from the info buffer. We will finally use it here
     while (true){
         if(dg->endpoint != NULL){

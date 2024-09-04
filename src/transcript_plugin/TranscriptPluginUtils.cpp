@@ -32,9 +32,9 @@ void create_obs_text_source_if_needed()
 		obs_data_set_bool(source_settings, "word_wrap", true);
 		obs_data_set_int(source_settings, "custom_width", 1760);
 		obs_data_t *font_data = obs_data_create();
-		obs_data_set_string(font_data, "face", "Arial");
-		obs_data_set_string(font_data, "style", "Regular");
-		obs_data_set_int(font_data, "size", 72);
+		obs_data_set_string(font_data, "face", "Noto Sans CJK KR");
+		obs_data_set_string(font_data, "style", "Light");
+		obs_data_set_int(font_data, "size", 20);
 		obs_data_set_int(font_data, "flags", 0);
 		obs_data_set_obj(source_settings, "font", font_data);
 		obs_data_release(font_data);
