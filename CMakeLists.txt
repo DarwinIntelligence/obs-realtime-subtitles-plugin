@@ -11,7 +11,6 @@ include(compilerconfig)
 include(defaults)
 include(helpers)
 
-
 add_library(${CMAKE_PROJECT_NAME} MODULE)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -O3 -Wall")
