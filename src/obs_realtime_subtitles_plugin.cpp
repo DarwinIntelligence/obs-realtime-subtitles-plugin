@@ -5,7 +5,13 @@
 #include <obs-module.h>
 #include <PluginSupport.h>
 #include <GUIDock.h>
+#include <PluginManager.h>
+#include "transcript_plugin/TranscriptPlugin.h"
+#include "transcript_plugin/TranscriptPluginCallbacks.h"
+#include "transcript_plugin/TranscriptPluginData.h"
+#include "transcript_plugin/TranscriptPluginUtils.h"
 #include "UIConstants.h"
+
 
 OBS_DECLARE_MODULE();
 OBS_MODULE_USE_DEFAULT_LOCALE(PLUGIN_NAME, "en-GB");
@@ -17,11 +23,13 @@ GUIDock *dock = nullptr;
 
 void menu_clicked()
 {
-	obs_log(LOG_INFO, "Main menu clicked");
-	if (mainWindow) {
-		mainWindow->show_self();
-	}
+	info_log( "Main menu clicked");
+    if (mainWindow) {
+        mainWindow->show_self();
+    }
 }
+
+extern struct obs_source_info transcript_plugin_info;
 
 bool obs_module_load(void)
 {
@@ -36,11 +44,13 @@ bool obs_module_load(void)
 
 	dock = new GUIDock(main_window);
 	obs_frontend_add_custom_qdock("0", dock);
+	obs_register_source(&transcript_plugin_info);
+	info_log("Returning True");
 	obs_frontend_pop_ui_translation();
 	return true;
 }
 
 void obs_module_unload(void)
 {
-	obs_log(LOG_INFO, "plugin unloaded");
+	info_log( "plugin unloaded");
 }

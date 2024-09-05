@@ -13,7 +13,7 @@ include(helpers)
 
 add_library(${CMAKE_PROJECT_NAME} MODULE)
 
-include_directories(src/plugin src/window src/util lib)
+include_directories(src/plugin src/window src/transcript_plugin src/util lib deps)
 
 find_package(libobs REQUIRED)
 target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE OBS::libobs)
@@ -40,6 +40,12 @@ file(GLOB Window src/window/*.cpp)
 
 file(GLOB Plugin src/plugin/*.cpp)
 
-target_sources(${CMAKE_PROJECT_NAME} PRIVATE src/obs_realtime_subtitles_plugin.cpp ${Plugin} ${Window})
+file(GLOB Transcript src/transcript_plugin/*.cpp)
+
+file(GLOB CFile src/transcript_plugin/*.c)
+
+file(GLOB Deepgram src/deepgram/*.cpp)
+
+target_sources(${CMAKE_PROJECT_NAME} PRIVATE src/obs_realtime_subtitles_plugin.cpp ${Plugin} ${Window} ${Transcript} ${CFile} ${Deepgram})
 
 set_target_properties_plugin(${CMAKE_PROJECT_NAME} PROPERTIES OUTPUT_NAME ${_name})
