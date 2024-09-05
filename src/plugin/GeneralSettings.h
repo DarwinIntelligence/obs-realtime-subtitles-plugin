@@ -1,8 +1,6 @@
 #ifndef GENERALSETTINGS_H
 #define GENERALSETTINGS_H
 
-using namespace std;
-
 #include <QObject>
 
 struct GeneralSettings {

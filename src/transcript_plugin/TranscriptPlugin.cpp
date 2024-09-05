@@ -155,10 +155,10 @@ void *transcript_plugin_create(obs_data_t *settings, obs_source_t *filter)
 	// audio_data->buffered_output = obs_data_get_bool(settings, "buffered_output");
 
     for (size_t i = 0; i < audio_data->channels; i++) {
-		obs_deque_init(&audio_data->input_buffers[i]);
+		deque_init(&audio_data->input_buffers[i]);
 	}
-	obs_deque_init(&audio_data->info_buffer);
-	obs_deque_init(&audio_data->resampled_buffer);
+	deque_init(&audio_data->info_buffer);
+	deque_init(&audio_data->resampled_buffer);
 
     // allocate copy buffers
 	audio_data->copy_buffers[0] =
@@ -256,12 +256,12 @@ void transcript_plugin_destroy(void *data)
 		bfree(audio_data->copy_buffers[0]);
 		audio_data->copy_buffers[0] = nullptr;
 		for (size_t i = 0; i < audio_data->channels; i++) {
-			obs_deque_free(&audio_data->input_buffers[i]);
+			deque_free(&audio_data->input_buffers[i]);
 		}
 	}
-	obs_deque_free(&audio_data->info_buffer);
+	deque_free(&audio_data->info_buffer);
 
-	obs_deque_free(&audio_data->resampled_buffer);
+	deque_free(&audio_data->resampled_buffer);
 
 	// if (audio_data->captions_monitor.isEnabled()) {
 	// 	audio_data->captions_monitor.stopThread();

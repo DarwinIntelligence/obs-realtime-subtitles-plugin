@@ -48,13 +48,13 @@ struct transcript_data {
 
 	/* PCM buffers */
 	int *copy_buffers[MAX_PREPROC_CHANNELS];
-	struct obs_deque info_buffer;
-	struct obs_deque input_buffers[MAX_PREPROC_CHANNELS];
+	struct deque info_buffer;
+	struct deque input_buffers[MAX_PREPROC_CHANNELS];
 	// struct obs_deque whisper_buffer;
 
 	/* Resampler */
 	audio_resampler_t *resampler_to_deepgram;
-	struct obs_deque resampled_buffer;
+	struct deque resampled_buffer;
 
 	/* whisper */
 	// std::string whisper_model_path;

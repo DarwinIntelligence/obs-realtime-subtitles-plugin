@@ -5,7 +5,6 @@
 #include <obs-module.h>
 #include <PluginSupport.h>
 #include <GUIDock.h>
-#include <PluginManager.h>
 #include "transcript_plugin/TranscriptPlugin.h"
 #include "transcript_plugin/TranscriptPluginCallbacks.h"
 #include "transcript_plugin/TranscriptPluginData.h"
@@ -33,7 +32,8 @@ extern struct obs_source_info transcript_plugin_info;
 
 bool obs_module_load(void)
 {
-	obs_log(LOG_INFO, "plugin loaded successfully (version %s)", PLUGIN_VERSION);
+	info_log("plugin loaded successfully (version %s)", PLUGIN_VERSION);
+
 	const auto main_window =
 		static_cast<QMainWindow *>(obs_frontend_get_main_window());
 	obs_frontend_push_ui_translation(obs_module_get_string);
@@ -45,6 +45,7 @@ bool obs_module_load(void)
 	dock = new GUIDock(main_window);
 	obs_frontend_add_custom_qdock("0", dock);
 	obs_register_source(&transcript_plugin_info);
+
 	info_log("Returning True");
 	obs_frontend_pop_ui_translation();
 	return true;

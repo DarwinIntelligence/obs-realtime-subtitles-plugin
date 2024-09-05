@@ -1,8 +1,6 @@
 #ifndef PLUGINSETTINGS_H
 #define PLUGINSETTINGS_H
 
-using namespace std;
-
 #include <QObject>
 #include <GeneralSettings.h>
 

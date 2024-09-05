@@ -6,7 +6,8 @@ param(
     [string] $Configuration = 'RelWithDebInfo',
     [switch] $SkipAll,
     [switch] $SkipBuild,
-    [switch] $SkipDeps
+    [switch] $SkipDeps,
+    [string] $BoostDirectory = 'D:\a'
 )
 
 $ErrorActionPreference = 'Stop'
@@ -23,6 +24,49 @@ if ( ! ( [System.Environment]::Is64BitOperatingSystem ) ) {
 if ( $PSVersionTable.PSVersion -lt '7.0.0' ) {
     Write-Warning 'The obs-deps PowerShell build script requires PowerShell Core 7. Install or upgrade your PowerShell version: https://aka.ms/pscore6'
     exit 2
+}
+
+function Download-Boost {
+    param (
+        [string] $Version,
+        [string] $Destination
+    )
+
+    $BoostUrl = "https://archives.boost.io/release/1.74.0/source/boost_1_74_0.zip"
+    $BoostZip = "${Destination}\boost_1_74_0.zip"
+    $BoostExtractPath = "${Destination}\boost_1_74_0"
+
+    if (-Not (Test-Path -Path $BoostExtractPath)) {
+        Write-Host "Downloading Boost ${Version}..."
+        Invoke-WebRequest -Uri $BoostUrl -OutFile $BoostZip
+
+        Write-Host "Extracting Boost..."
+        Expand-Archive -Path $BoostZip -DestinationPath $Destination -Force
+        Remove-Item $BoostZip -Force
+    } else {
+        Write-Host "Boost ${Version} already exists at ${BoostExtractPath}"
+    }
+
+    return $BoostExtractPath
+}
+
+function Build-Boost {
+    param (
+        [string] $BoostPath
+    )
+
+    Push-Location -Path $BoostPath
+
+    .\bootstrap.bat
+
+    Write-Host "Building Boost..."
+    & .\b2 || {
+        Write-Error "Boost build failed."
+        Pop-Location
+        exit 1
+    }
+
+    Pop-Location
 }
 
 function Build {
@@ -51,6 +95,10 @@ function Build {
     if ( ! $SkipDeps ) {
         Install-BuildDependencies -WingetFile "${ScriptHome}/.Wingetfile"
     }
+
+    # Download and build Boost
+    $BoostPath = Download-Boost -Destination $BoostDirectory
+    Build-Boost -BoostPath $BoostPath
 
     Push-Location -Stack BuildTemp
     if ( ! ( ( $SkipAll ) -or ( $SkipBuild ) ) ) {
