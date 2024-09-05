@@ -7,13 +7,14 @@ project(${_name} VERSION ${_version})
 option(ENABLE_FRONTEND_API "Use obs-frontend-api for UI functionality" ON)
 option(ENABLE_QT "Use Qt functionality" ON)
 
+
 include(compilerconfig)
 include(defaults)
 include(helpers)
+include_directories(include)
 
 add_library(${CMAKE_PROJECT_NAME} MODULE)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -O3 -Wall")
 add_definitions(-DASIO_STANDALONE)
 add_definitions(-DASIO_HAS_STD_ADDRESSOF)
 add_definitions(-DASIO_HAS_STD_ARRAY)
@@ -24,8 +25,9 @@ add_definitions(-DASIO_HAS_VARIADIC_TEMPLATES)
 add_definitions(-DASIO_HAS_STD_FUNCTION)
 add_definitions(-DASIO_HAS_STD_CHRONO)
 add_definitions(-DBOOST_ALL_NO_LIB)
-add_definitions(-D_WINSOCK_DEPRECATED_NO_WARNINGS)
-include_directories(src/plugin src/window src/transcript_plugin deps src/util lib)
+include_directories(src/plugin src/window src/transcript_plugin src/util lib .deps/obs-deps-2024-03-19-x64/include)
+
+# Set the module linker flags with proper quoting
 
 find_package(libobs REQUIRED)
 target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE OBS::libobs)
@@ -48,6 +50,10 @@ if(ENABLE_QT)
                AUTORCC ON)
 endif()
 
+find_package(OpenSSL COMPONENTS SSL Crypto)
+link_directories("C:/Program Files/OpenSSL-Win64/lib/VC/x64/MD")
+target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE OpenSSL::SSL OpenSSL::Crypto)
+
 file(GLOB Window src/window/*.cpp)
 
 file(GLOB Plugin src/plugin/*.cpp)
@@ -57,8 +63,8 @@ file(GLOB Transcript src/transcript_plugin/*.cpp)
 file(GLOB CFile src/transcript_plugin/*.c)
 
 file(GLOB Deepgram src/deepgram/*.cpp)
+target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE /wd4267)
 
 target_sources(${CMAKE_PROJECT_NAME} PRIVATE src/obs_realtime_subtitles_plugin.cpp ${Plugin} ${Window} ${Transcript}
                                              ${CFile} ${Deepgram})
-
 set_target_properties_plugin(${CMAKE_PROJECT_NAME} PROPERTIES OUTPUT_NAME ${_name})

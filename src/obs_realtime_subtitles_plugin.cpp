@@ -27,7 +27,7 @@ void menu_clicked()
     }
 }
 
-extern struct obs_source_info transcript_plugin_info;
+struct obs_source_info transcript_plugin_info;
 
 bool obs_module_load(void)
 {
