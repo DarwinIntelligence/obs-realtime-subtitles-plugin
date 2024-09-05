@@ -19,8 +19,7 @@ include_directories(src/plugin src/window src/transcript_plugin deps src/util li
 
 find_package(libobs REQUIRED)
 find_package(websocketpp REQUIRED)
-include(websocketpp)
-target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE OBS::libobs)
+target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE OBS::libobs websocketpp asio)
 
 if(ENABLE_FRONTEND_API)
   find_package(obs-frontend-api REQUIRED)
