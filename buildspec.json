@@ -26,14 +26,6 @@
             "debugSymbols": {
                 "windows-x64": "fbddd1f659c360f2291911ac5709b67b6f8182e6bca519d24712e4f6fd3cc865"
             }
-        },
-        "websocketpp": {
-            "version": "2024-03-19",
-            "baseUrl": "https://github.com/obsproject/obs-deps/releases/download",
-            "label": "Pre-Built Websocket",
-            "hashes": {
-                "windows-x64": "6e86068371526a967e805f6f9903f9407adb683c21820db5f07da8f30d11e998"
-            }
         }
     },
     "platformConfig": {
