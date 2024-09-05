@@ -60,7 +60,7 @@ function Build-Boost {
     .\bootstrap.bat
 
     Write-Host "Building Boost..."
-    & .\b2 || {
+    & .\bjam || {
         Write-Error "Boost build failed."
         Pop-Location
         exit 1
