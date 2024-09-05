@@ -14,18 +14,11 @@ include(helpers)
 add_library(${CMAKE_PROJECT_NAME} MODULE)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -O3 -Wall")
-
+add_definitions(-DASIO_STANDALONE)
 include_directories(src/plugin src/window src/transcript_plugin deps src/util lib)
 
 find_package(libobs REQUIRED)
-find_package(nlohmann_json 3 REQUIRED)
-
-# Find WebSocket++
-find_package(Websocketpp 0.8 REQUIRED)
-
-# Find Asio
-find_package(Asio 1.12.1 REQUIRED)
-target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE nlohmann_json::nlohmann_json Websocketpp::Websocketpp Asio::Asio REQUIRED)
+target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE OBS::libobs)
 
 if(ENABLE_FRONTEND_API)
   find_package(obs-frontend-api REQUIRED)
