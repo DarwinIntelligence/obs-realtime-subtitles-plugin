@@ -3,6 +3,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+#define ASIO_STANDALONE
 
 #include <stdio.h>
 #include <stdlib.h>

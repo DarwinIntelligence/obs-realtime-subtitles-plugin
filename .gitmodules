@@ -1,0 +1,9 @@
+[submodule "deps/json"]
+	path = deps/json
+	url = https://github.com/nlohmann/json
+[submodule "deps/asio"]
+	path = deps/asio
+	url = https://github.com/chriskohlhoff/asio
+[submodule "deps/websocketpp"]
+	path = deps/websocketpp
+	url = https://github.com/zaphoyd/logi_websocketpp
