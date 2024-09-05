@@ -13,7 +13,8 @@ include(helpers)
 
 add_library(${CMAKE_PROJECT_NAME} MODULE)
 
-include_directories(src/plugin src/window src/transcript_plugin deps src/util lib)
+include_directories(src/plugin src/window src/transcript_plugin src/util lib deps)
+
 
 find_package(libobs REQUIRED)
 target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE OBS::libobs)
