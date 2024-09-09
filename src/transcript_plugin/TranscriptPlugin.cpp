@@ -20,27 +20,27 @@
 #endif
 
 
-// void set_source_signals(transcript_data *audio_data, obs_source_t *parent_source)
-// {
-// 	signal_handler_t *sh = obs_source_get_signal_handler(parent_source);
-// 	signal_handler_connect(sh, "media_play", media_play_callback, audio_data);
-// 	signal_handler_connect(sh, "media_started", media_started_callback, audio_data);
-// 	signal_handler_connect(sh, "media_pause", media_pause_callback, audio_data);
-// 	signal_handler_connect(sh, "media_restart", media_restart_callback, audio_data);
-// 	signal_handler_connect(sh, "media_stopped", media_stopped_callback, audio_data);
-// 	audio_data->source_signals_set = true;
-// }
+void set_source_signals(transcript_data *audio_data, obs_source_t *parent_source)
+{
+	signal_handler_t *sh = obs_source_get_signal_handler(parent_source);
+	signal_handler_connect(sh, "media_play", media_play_callback, audio_data);
+	signal_handler_connect(sh, "media_started", media_started_callback, audio_data);
+	signal_handler_connect(sh, "media_pause", media_pause_callback, audio_data);
+	signal_handler_connect(sh, "media_restart", media_restart_callback, audio_data);
+	signal_handler_connect(sh, "media_stopped", media_stopped_callback, audio_data);
+	audio_data->source_signals_set = true;
+}
 
-// void disconnect_source_signals(transcript_data *audio_data, obs_source_t *parent_source)
-// {
-// 	signal_handler_t *sh = obs_source_get_signal_handler(parent_source);
-// 	signal_handler_disconnect(sh, "media_play", media_play_callback, audio_data);
-// 	signal_handler_disconnect(sh, "media_started", media_started_callback, audio_data);
-// 	signal_handler_disconnect(sh, "media_pause", media_pause_callback, audio_data);
-// 	signal_handler_disconnect(sh, "media_restart", media_restart_callback, audio_data);
-// 	signal_handler_disconnect(sh, "media_stopped", media_stopped_callback, audio_data);
-// 	audio_data->source_signals_set = false;
-// }
+void disconnect_source_signals(transcript_data *audio_data, obs_source_t *parent_source)
+{
+	signal_handler_t *sh = obs_source_get_signal_handler(parent_source);
+	signal_handler_disconnect(sh, "media_play", media_play_callback, audio_data);
+	signal_handler_disconnect(sh, "media_started", media_started_callback, audio_data);
+	signal_handler_disconnect(sh, "media_pause", media_pause_callback, audio_data);
+	signal_handler_disconnect(sh, "media_restart", media_restart_callback, audio_data);
+	signal_handler_disconnect(sh, "media_stopped", media_stopped_callback, audio_data);
+	audio_data->source_signals_set = false;
+}
 
 
 
@@ -65,13 +65,13 @@ struct obs_audio_data *transcript_plugin_filter_audio(void *data, struct obs_aud
 
 
     // //Init of source sigs
-    // if (!audio_data->source_signals_set) {
-	// 	// obs_filter_get_parent only works in the filter function
-	// 	obs_source_t *parent_source = obs_filter_get_parent(audio_data->context);
-	// 	if (parent_source != nullptr) {
-	// 		set_source_signals(audio_data, parent_source);
-	// 	}
-	// }
+    if (!audio_data->source_signals_set) {
+		// obs_filter_get_parent only works in the filter function
+		obs_source_t *parent_source = obs_filter_get_parent(audio_data->context);
+		if (parent_source != nullptr) {
+			set_source_signals(audio_data, parent_source);
+		}
+	}
 
     if(!audio_data->active){
         return audio;
@@ -115,6 +115,7 @@ struct obs_audio_data *transcript_plugin_filter_audio(void *data, struct obs_aud
 						sizeof(float));
 					i16_audio[i] = f32_to_i16(sample_float);
 				}
+			//Need to lock this so that it doesn't get used in two threads at once
 			audio_data->endpoint->send_binary(
 				audio_data->endpoint_id, i16_audio, audio->frames * sizeof(float) / 2);
 			free(i16_audio);
@@ -128,7 +129,7 @@ struct obs_audio_data *transcript_plugin_filter_audio(void *data, struct obs_aud
 const char *transcript_plugin_name(void *unused)
 {
 	UNUSED_PARAMETER(unused);
-	return MT_("transcript_plugin");
+	return MT_("Darwin Translation");
 }
 
 
@@ -145,33 +146,15 @@ void *transcript_plugin_create(obs_data_t *settings, obs_source_t *filter)
 	audio_data->last_num_frames = 0;
 	audio_data->min_sub_duration = (int)obs_data_get_int(settings, "min_sub_duration");
 	audio_data->last_sub_render_time = now_ms();
+	audio_data->endpoint = NULL;
 	// audio_data->log_level = (int)obs_data_get_int(settings, "log_level");
 	// audio_data->save_srt = obs_data_get_bool(settings, "subtitle_save_srt");
-	// audio_data->truncate_output_file = obs_data_get_bool(settings, "truncate_output_file");
-	// audio_data->save_only_while_recording = obs_data_get_bool(settings, "only_while_recording");
-	// audio_data->rename_file_to_match_recording =
-	// 	obs_data_get_bool(settings, "rename_file_to_match_recording");
+	audio_data->truncate_output_file = obs_data_get_bool(settings, "truncate_output_file");
+	audio_data->save_only_while_recording = obs_data_get_bool(settings, "only_while_recording");
+	audio_data->rename_file_to_match_recording =
+		obs_data_get_bool(settings, "rename_file_to_match_recording");
 	audio_data->process_while_muted = obs_data_get_bool(settings, "process_while_muted");
-	// audio_data->buffered_output = obs_data_get_bool(settings, "buffered_output");
-
-    for (size_t i = 0; i < audio_data->channels; i++) {
-		obs_deque_init(&audio_data->input_buffers[i]);
-	}
-	obs_deque_init(&audio_data->info_buffer);
-	obs_deque_init(&audio_data->resampled_buffer);
-
-    // allocate copy buffers
-	audio_data->copy_buffers[0] =
-		static_cast<int *>(bzalloc(audio_data->channels * audio_data->frames * sizeof(int)));
-	if (audio_data->copy_buffers[0] == nullptr) {
-		info_log("Failed to allocate copy buffer");
-		audio_data->active = false;
-		return nullptr;
-	}
-	for (size_t c = 1; c < audio_data->channels; c++) { // set the channel pointers
-		audio_data->copy_buffers[c] = audio_data->copy_buffers[0] + c * audio_data->frames;
-	}
-	memset(audio_data->copy_buffers[0], 0, audio_data->channels * audio_data->frames * sizeof(int));
+	
 
 	audio_data->context = filter; //technically, this is a filter. We take the audio, store it, but don't do anything to it here. 
 
@@ -188,12 +171,7 @@ void *transcript_plugin_create(obs_data_t *settings, obs_source_t *filter)
 	dst.format = AUDIO_FORMAT_16BIT;
 	dst.speakers = convert_speaker_layout((uint8_t)1);
 
-	audio_data->resampler_to_deepgram = audio_resampler_create(&dst, &src); //RENAME: going to have to rename this later
-	if (!audio_data->resampler_to_deepgram) {
-		info_log( "Failed to create resampler");
-		audio_data->active = false;
-		return nullptr;
-	}
+	
 
     
 	info_log( "clear text source data");
@@ -209,11 +187,9 @@ void *transcript_plugin_create(obs_data_t *settings, obs_source_t *filter)
 		// set the text source name
 		audio_data->text_source_name = subtitle_sources;
 	}
-	info_log( "clear paths and whisper context");
-	// audio_data->whisper_model_file_currently_loaded = "";
+
 	audio_data->output_file_path = std::string("");
-	// audio_data->whisper_model_path = std::string(""); // The update function will set the model path
-	// audio_data->whisper_context = nullptr;
+
 
 	signal_handler_t *sh_filter = obs_source_get_signal_handler(audio_data->context);
 	if (sh_filter == nullptr) {
@@ -241,34 +217,23 @@ void transcript_plugin_destroy(void *data)
 	struct transcript_data *audio_data =
 		static_cast<struct transcript_data *>(data);
 
+
 	signal_handler_t *sh_filter = obs_source_get_signal_handler(audio_data->context);
 	signal_handler_disconnect(sh_filter, "enable", enable_callback, audio_data);
-
+	
 	info_log("filter destroy");
-	// shutdown_whisper_thread(audio_data);
-
-	if (audio_data->resampler_to_deepgram) {
-		audio_resampler_destroy(audio_data->resampler_to_deepgram);
+	info_log("shutting down deepgram thread. PLUGIN DESTROY");
+	audio_data->continue_deepgram_loop = false;
+	if(audio_data->deepgram_thread.joinable()){
+		info_log("Trying to join threads");
+		audio_data->deepgram_thread.join();
 	}
-
-	{
-		// std::lock_guard<std::mutex> lockbuf(audio_data->whisper_buf_mutex);
-		bfree(audio_data->copy_buffers[0]);
-		audio_data->copy_buffers[0] = nullptr;
-		for (size_t i = 0; i < audio_data->channels; i++) {
-			obs_deque_free(&audio_data->input_buffers[i]);
-		}
+	if(audio_data->endpoint != NULL){ //After the join so it destroys the endpoint
+		delete audio_data->endpoint;
 	}
-	obs_deque_free(&audio_data->info_buffer);
+	info_log("Done PLUGIN DESTROY");
 
-	obs_deque_free(&audio_data->resampled_buffer);
-
-	// if (audio_data->captions_monitor.isEnabled()) {
-	// 	audio_data->captions_monitor.stopThread();
-	// }
-	// if (audio_data->translation_monitor.isEnabled()) {
-	// 	audio_data->translation_monitor.stopThread();
-	// }
+	
 
 	bfree(audio_data);
 }
@@ -340,6 +305,10 @@ void transcript_plugin_update(void *data, obs_data_t *s) //Mostly do nothing rig
 	audio_data->last_sub_render_time = now_ms();
 	// audio_data->partial_transcription = obs_data_get_bool(s, "partial_group");
 	// audio_data->partial_latency = (int)obs_data_get_int(s, "partial_latency");
+	if(audio_data->endpoint != NULL)
+	{
+		delete audio_data->endpoint;
+	}
 	audio_data->endpoint = new WebsocketEndpoint();
 	audio_data->endpoint_id = audio_data->endpoint->connect(
 	// 			"wss://api.deepgram.com/v1/listen?language=en&model=general-enhanced&tier=enhanced&encoding=linear16&sample_rate=44100",
@@ -347,31 +316,7 @@ void transcript_plugin_update(void *data, obs_data_t *s) //Mostly do nothing rig
 				"wss://deepgram.darwinai.link/v1/listen?language=ko&model=nova-2-general&encoding=linear16&sample_rate=44100", ""); //Darwins
 	
 	
-	// WebsocketEndpoint *endpoint = new WebsocketEndpoint();
-
-	// int endpoint_id = endpoint->connect(
-	// // 			"wss://api.deepgram.com/v1/listen?language=en&model=general-enhanced&tier=enhanced&encoding=linear16&sample_rate=44100",
-	// 			// audio_data->api_key);
-	// 			"wss://deepgram.darwinai.link/v1/listen?language=ko&model=nova-2-general&encoding=linear16&sample_rate=44100", ""); //Darwins
-	// 			//language=en&model=general-enhanced&tier=enhanced
-
 	
-	// audio_data->endpoint_id = endpoint_id;
-	// audio_data->endpoint = endpoint;
-	// bool new_buffered_output = obs_data_get_bool(s, "buffered_output");
-	// int new_buffer_num_lines = (int)obs_data_get_int(s, "buffer_num_lines");
-	// int new_buffer_num_chars_per_line = (int)obs_data_get_int(s, "buffer_num_chars_per_line");
-	// TokenBufferSegmentation new_buffer_output_type =
-	// 	(TokenBufferSegmentation)obs_data_get_int(s, "buffer_output_type");
-	// const char *filter_words_replace = obs_data_get_string(s, "filter_words_replace");
-	// if (filter_words_replace != nullptr && strlen(filter_words_replace) > 0) {
-	// 	info_log( "filter_words_replace: %s", filter_words_replace);
-	// 	// deserialize the filter words replace
-	// 	audio_data->filter_words_replace = deserialize_filter_words_replace(filter_words_replace);
-	// } else {
-	// 	// clear the filter words replace
-	// 	audio_data->filter_words_replace.clear();
-	// }
 
 	if (audio_data->save_to_file) {
 		audio_data->output_file_path = "";
@@ -397,9 +342,14 @@ void transcript_plugin_update(void *data, obs_data_t *s) //Mostly do nothing rig
 		} 
 	}
 	else{
-		info_log("Creating new deepgram thread");
-		std::thread new_deepgram_thread(deepgram_loop,audio_data);
-		audio_data->deepgram_thread.swap(new_deepgram_thread);
+
+		if(!(audio_data->deepgram_thread.joinable())){//if the thread isn't joinable, then there isn't a new thread running and we should run one
+			info_log("Creating new deepgram thread");
+			std::thread new_deepgram_thread(deepgram_loop,audio_data);
+
+			audio_data->deepgram_thread.swap(new_deepgram_thread);
+		}
+		
 	}
 
 	
@@ -422,6 +372,16 @@ void transcript_plugin_deactivate(void *data)
 	audio_data->active = false;
 }
 
+void transcript_plugin_remove(void *data, obs_source_t *source)
+{
+	struct transcript_data *df =
+		static_cast<struct transcript_data *>(data);
+
+	info_log("filter remove");
+
+	disconnect_source_signals(df, source);
+}
+
 int16_t f32_to_i16(float f)
 {
 	f = f * 32768;
@@ -433,3 +393,5 @@ int16_t f32_to_i16(float f)
 	}
 	return (int16_t)f;
 }
+
+

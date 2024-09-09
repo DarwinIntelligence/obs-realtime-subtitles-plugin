@@ -5,9 +5,11 @@
 #include "TranscriptPluginCallbacks.h"
 #include <iostream>
 #include <fstream>
+#include <chrono>
 
 
 void deepgram_loop(void *data){
+    info_log("Here is the new thread id: %zu", std::hash<std::thread::id>{}(std::this_thread::get_id()));
 
     if (data == nullptr){
         info_log("deepgram_loop recieved a null ptr for data");
@@ -15,12 +17,16 @@ void deepgram_loop(void *data){
     }
 
     struct transcript_data *dg = static_cast<struct transcript_data *>(data);
+        info_log("Here is endpoint ID %d", dg->endpoint_id);
 
     //get all the info from the info buffer. We will finally use it here
-    while (true){
+    while (dg->continue_deepgram_loop){
         if(dg->endpoint != NULL){
+            std::lock_guard<std::mutex> lock(dg->endpoint_mutex);//lock the use of the endpoint until the end of this if statement. lock_guard is destroyed when end of scope is reached
+            // info_log("Before we get the message");
             std::vector<std::string> messages =
 			dg->endpoint->get_messages(dg->endpoint_id);
+            // info_log("After we get the message");
             for (auto message : messages) {
                 auto json_message = nlohmann::json::parse(message);
                 std::string transcript =
@@ -59,6 +65,7 @@ void deepgram_loop(void *data){
         //         // info_log("Do we get here after true?");
         //     }
         // }
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));//adding a print stops seg faults, so I think we are checking the socket too often.
         
     }
 

@@ -22,11 +22,13 @@
 
 struct transcript_data {
 
-
+	
 	WebsocketEndpoint *endpoint;
 	int endpoint_id;
 	std::string api_key = "60f33262bcddea4d1fd5b60eee42c79a6d9806b3";
 	std::string transcript;
+
+	bool source_signals_set = false;
 
 
 	obs_source_t *context; // obs filter source (technically, this is a filter. We take the audio, store it, but don't do anything to it here. )
@@ -46,23 +48,7 @@ struct transcript_data {
 	uint64_t last_sub_render_time;
 	bool cleared_last_sub;
 
-	/* PCM buffers */
-	int *copy_buffers[MAX_PREPROC_CHANNELS];
-	struct obs_deque info_buffer;
-	struct obs_deque input_buffers[MAX_PREPROC_CHANNELS];
-	// struct obs_deque whisper_buffer;
-
-	/* Resampler */
-	audio_resampler_t *resampler_to_deepgram;
-	struct obs_deque resampled_buffer;
-
-	/* whisper */
-	// std::string whisper_model_path;
-	// struct whisper_context *whisper_context;
-	// whisper_full_params whisper_params;
-
-	/* Silero VAD */
-	// std::unique_ptr<VadIterator> vad;
+	
 
 	float filler_p_threshold;
 	float sentence_psum_accept_thresh;
@@ -83,6 +69,8 @@ struct transcript_data {
 	bool processed_successfully = false;
 
 
+	bool continue_deepgram_loop = true;
+
 	//DeepGram Info
 	// std::string
 
@@ -100,6 +88,7 @@ struct transcript_data {
 
 	// Use std for thread and mutex
 	std::thread deepgram_thread;
+	std::mutex endpoint_mutex;
 
 	// std::mutex deepgram_buf_mutex;
 	// std::mutex deepgram_ctx_mutex;

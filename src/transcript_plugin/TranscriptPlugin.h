@@ -35,6 +35,7 @@ const char *transcript_plugin_name(void *unused);
 struct obs_audio_data *transcript_plugin_filter_audio(void *data, struct obs_audio_data *audio);
 void transcript_plugin_deactivate(void *data);
 void transcript_plugin_defaults(obs_data_t *s);
+void transcript_plugin_remove(void *data, obs_source_t *source);
 obs_properties_t *transcript_plugin_properties(void *data);
 int16_t f32_to_i16(float f);
 

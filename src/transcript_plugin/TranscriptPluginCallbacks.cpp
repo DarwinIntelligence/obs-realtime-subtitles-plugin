@@ -36,33 +36,33 @@ void send_caption_to_source(const std::string &target_source_name, const std::st
 	obs_source_release(target);
 	info_log("We should be printing this but it is Korean %s", caption.c_str());
 	info_log("Opening transcript");
-	transcriptFile.open("/home/simon/transcript.txt", std::ios_base::app);
-	transcriptFile << caption;
+	// transcriptFile.open("/home/simon/transcript.txt", std::ios_base::app);
+	// transcriptFile << caption;
 }
 
-void reset_caption_state(transcript_data *gf_)
+void reset_caption_state(transcript_data *audio_data_)
 {
-	// if (gf_->captions_monitor.isEnabled()) {
-	// 	gf_->captions_monitor.clear();
-	// 	gf_->translation_monitor.clear();
+	// if (audio_data_->captions_monitor.isEnabled()) {
+	// 	audio_data_->captions_monitor.clear();
+	// 	audio_data_->translation_monitor.clear();
 	// }
-	send_caption_to_source(gf_->text_source_name, "");
-	send_caption_to_source(gf_->translation_output, "");
+	send_caption_to_source(audio_data_->text_source_name, "");
+	send_caption_to_source(audio_data_->translation_output, "");
 	// flush the buffer
-	{
-		// std::lock_guard<std::mutex> lock(gf_->whisper_buf_mutex);
-		for (size_t c = 0; c < gf_->channels; c++) {
-			if (gf_->input_buffers[c].data != nullptr) {
-				obs_deque_free(&gf_->input_buffers[c]);
-			}
-		}
-		if (gf_->info_buffer.data != nullptr) {
-			obs_deque_free(&gf_->info_buffer);
-		}
-		// if (gf_->whisper_buffer.data != nullptr) {
-		// 	obs_deque_free(&gf_->whisper_buffer);
-		// }
-	}
+	// {
+	// 	// std::lock_guard<std::mutex> lock(audio_data_->whisper_buf_mutex);
+	// 	for (size_t c = 0; c < audio_data_->channels; c++) {
+	// 		if (audio_data_->input_buffers[c].data != nullptr) {
+	// 			obs_deque_free(&audio_data_->input_buffers[c]);
+	// 		}
+	// 	}
+	// 	// if (audio_data_->info_buffer.data != nullptr) {
+	// 	// 	obs_deque_free(&audio_data_->info_buffer);
+	// 	// }
+	// 	// if (audio_data_->whisper_buffer.data != nullptr) {
+	// 	// 	obs_deque_free(&audio_data_->whisper_buffer);
+	// 	// }
+	// }
 }
 
 void recording_state_callback(enum obs_frontend_event event, void *data)
@@ -104,60 +104,65 @@ void recording_state_callback(enum obs_frontend_event event, void *data)
 void media_play_callback(void *data_, calldata_t *cd)
 {
 	UNUSED_PARAMETER(cd);
-	transcript_data *gf_ = static_cast<struct transcript_data *>(data_);
+	transcript_data *audio_data_ = static_cast<struct transcript_data *>(data_);
 	info_log( "media_play");
-	gf_->active = true;
+	audio_data_->active = true;
 }
 
 void media_started_callback(void *data_, calldata_t *cd)
 {
 	UNUSED_PARAMETER(cd);
-	transcript_data *gf_ = static_cast<struct transcript_data *>(data_);
+	transcript_data *audio_data_ = static_cast<struct transcript_data *>(data_);
 	info_log( "media_started");
-	gf_->active = true;
-	reset_caption_state(gf_);
+	audio_data_->active = true;
+	reset_caption_state(audio_data_);
 }
 
 void media_pause_callback(void *data_, calldata_t *cd)
 {
 	UNUSED_PARAMETER(cd);
-	transcript_data *gf_ = static_cast<struct transcript_data *>(data_);
+	transcript_data *audio_data_ = static_cast<struct transcript_data *>(data_);
 	info_log( "media_pause");
-	gf_->active = false;
+	audio_data_->active = false;
 }
 
 void media_restart_callback(void *data_, calldata_t *cd)
 {
 	UNUSED_PARAMETER(cd);
-	transcript_data *gf_ = static_cast<struct transcript_data *>(data_);
+	transcript_data *audio_data_ = static_cast<struct transcript_data *>(data_);
 	info_log( "media_restart");
-	gf_->active = true;
-	reset_caption_state(gf_);
+	audio_data_->active = true;
+	reset_caption_state(audio_data_);
 }
 
 void media_stopped_callback(void *data_, calldata_t *cd)
 {
 	UNUSED_PARAMETER(cd);
-	transcript_data *gf_ = static_cast<struct transcript_data *>(data_);
+	transcript_data *audio_data_ = static_cast<struct transcript_data *>(data_);
 	info_log( "media_stopped");
-	gf_->active = false;
-	reset_caption_state(gf_);
+	audio_data_->active = false;
+	reset_caption_state(audio_data_);
 }
 
 void enable_callback(void *data_, calldata_t *cd)
 {
-	transcript_data *gf_ = static_cast<struct transcript_data *>(data_);
+	transcript_data *audio_data_ = static_cast<struct transcript_data *>(data_);
 	bool enable = calldata_bool(cd, "enabled");
 	if (enable) {
 		info_log("enable_callback: enable");
-		gf_->active = true;
-		reset_caption_state(gf_);
-		// update_whisper_model(gf_);
+		audio_data_->active = true;
+		reset_caption_state(audio_data_);
 	} else {
 		info_log( "enable_callback: disable");
-		gf_->active = false;
-		reset_caption_state(gf_);
-		// shutdown_whisper_thread(gf_);
+		audio_data_->active = false;
+		reset_caption_state(audio_data_);
+		// shutdown_whisper_thread(audio_data_);
+		info_log("shutting down deepgram thread. ENABLE CALLBACK");
+		if(audio_data_->deepgram_thread.joinable()){
+			audio_data_->deepgram_thread.join();
+		}
+		info_log("Done. ENABLE CALLBACK");
+
 	}
 }
 

@@ -14,4 +14,5 @@ struct obs_source_info transcript_plugin_info = {
 	.activate = transcript_plugin_activate, //written
 	.deactivate = transcript_plugin_deactivate, //written
 	.filter_audio = transcript_plugin_filter_audio, //written
+	.filter_remove = transcript_plugin_remove,
 };
