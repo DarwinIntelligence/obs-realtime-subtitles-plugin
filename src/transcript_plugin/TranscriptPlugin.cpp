@@ -14,6 +14,7 @@
 #include <iomanip>
 #include <bitset>
 #include <regex>
+#include <string>
 #ifdef _WIN32
 #define NOMINMAX
 #include <Windows.h>
@@ -135,6 +136,8 @@ const char *transcript_plugin_name(void *unused)
 
 void *transcript_plugin_create(obs_data_t *settings, obs_source_t *filter)
 {
+	info_log("Here is the new thread id: %zu", std::hash<std::thread::id>{}(std::this_thread::get_id()));
+
     info_log("Creating transcript Plugin");
 
     void *data = bmalloc(sizeof(struct transcript_data));
@@ -147,10 +150,7 @@ void *transcript_plugin_create(obs_data_t *settings, obs_source_t *filter)
 	audio_data->min_sub_duration = (int)obs_data_get_int(settings, "min_sub_duration");
 	audio_data->last_sub_render_time = now_ms();
 	audio_data->endpoint = NULL;
-	// audio_data->log_level = (int)obs_data_get_int(settings, "log_level");
-	// audio_data->save_srt = obs_data_get_bool(settings, "subtitle_save_srt");
-	audio_data->truncate_output_file = obs_data_get_bool(settings, "truncate_output_file");
-	audio_data->save_only_while_recording = obs_data_get_bool(settings, "only_while_recording");
+
 	audio_data->rename_file_to_match_recording =
 		obs_data_get_bool(settings, "rename_file_to_match_recording");
 	audio_data->process_while_muted = obs_data_get_bool(settings, "process_while_muted");
@@ -203,6 +203,7 @@ void *transcript_plugin_create(obs_data_t *settings, obs_source_t *filter)
 	info_log( "run update");
 	// get the settings updated on the filter data struct
 	transcript_plugin_update(audio_data, settings);
+	audio_data->filter_created = true;
 
 	// handle the event OBS_FRONTEND_EVENT_RECORDING_STARTING to reset the srt sentence number
 	// to match the subtitles with the recording
@@ -228,9 +229,9 @@ void transcript_plugin_destroy(void *data)
 		info_log("Trying to join threads");
 		audio_data->deepgram_thread.join();
 	}
-	if(audio_data->endpoint != NULL){ //After the join so it destroys the endpoint
-		delete audio_data->endpoint;
-	}
+	// if(audio_data->endpoint != NULL){ //After the join so it destroys the endpoint
+	// 	delete audio_data->endpoint;
+	// }
 	info_log("Done PLUGIN DESTROY");
 
 	
@@ -250,22 +251,10 @@ void transcript_plugin_defaults(obs_data_t *s)
 	// 			 (int)TokenBufferSegmentation::SEGMENTATION_TOKEN);
 
 
-	obs_data_set_default_int(s, "log_level", LOG_DEBUG);
-	obs_data_set_default_bool(s, "log_words", false);
-	obs_data_set_default_bool(s, "caption_to_stream", false);
-	obs_data_set_default_string(s, "subtitle_sources", "none");
-	obs_data_set_default_bool(s, "process_while_muted", false);
-	obs_data_set_default_bool(s, "subtitle_save_srt", false);
-	obs_data_set_default_bool(s, "truncate_output_file", false);
-	obs_data_set_default_bool(s, "only_while_recording", false);
-	obs_data_set_default_bool(s, "rename_file_to_match_recording", true);
-	obs_data_set_default_int(s, "min_sub_duration", 3000);
-	obs_data_set_default_bool(s, "advanced_settings", false);
-	obs_data_set_default_bool(s, "translate", false);
-	obs_data_set_default_string(s, "translate_target_language", "__es__");
-	obs_data_set_default_bool(s, "translate_add_context", true);
-	obs_data_set_default_string(s, "translation_model_path_external", "");
-	obs_data_set_default_double(s, "sentence_psum_accept_thresh", 0.4);
+	obs_data_set_default_string(s, "source_language", "Japanese");
+	obs_data_set_default_string(s, "target_language", "Korean");
+
+
 	// obs_data_set_default_bool(s, "partial_group", false);
 	// obs_data_set_default_int(s, "partial_latency", 1100);
 
@@ -298,26 +287,51 @@ void transcript_plugin_update(void *data, obs_data_t *s) //Mostly do nothing rig
 	audio_data->save_only_while_recording = obs_data_get_bool(s, "only_while_recording");
 	audio_data->rename_file_to_match_recording = obs_data_get_bool(s, "rename_file_to_match_recording");
 	// Get the current timestamp using the system clock
-	audio_data->start_timestamp_ms = now_ms();
 	audio_data->sentence_number = 1;
 	audio_data->process_while_muted = obs_data_get_bool(s, "process_while_muted");
 	audio_data->min_sub_duration = (int)obs_data_get_int(s, "min_sub_duration");
 	audio_data->last_sub_render_time = now_ms();
 	// audio_data->partial_transcription = obs_data_get_bool(s, "partial_group");
 	// audio_data->partial_latency = (int)obs_data_get_int(s, "partial_latency");
-	if(audio_data->endpoint != NULL)
-	{
-		delete audio_data->endpoint;
+	audio_data->continue_deepgram_loop = false; //so we can stop the loop
+	if (audio_data->source_lang != obs_data_get_string(s, "source_language")){
+		audio_data->source_lang = obs_data_get_string(s, "source_language");
+		audio_data-> update_thread = true;
 	}
-	audio_data->endpoint = new WebsocketEndpoint();
-	audio_data->endpoint_id = audio_data->endpoint->connect(
-	// 			"wss://api.deepgram.com/v1/listen?language=en&model=general-enhanced&tier=enhanced&encoding=linear16&sample_rate=44100",
-				// audio_data->api_key);
-				"wss://deepgram.darwinai.link/v1/listen?language=ko&model=nova-2-general&encoding=linear16&sample_rate=44100", ""); //Darwins
+
+	bool joinable = audio_data->deepgram_thread.joinable();
+	info_log ("She joinable??? %s", joinable ? "true" : "false");
+	if(audio_data->deepgram_thread.joinable()){
+		info_log("Trying to join threads");
+		audio_data->deepgram_thread.join();
+		info_log("Joined");
+	}
 	
 	
+	
+	// if(audio_data->endpoint != NULL)
+	// {
+	// 	std::lock_guard<std::mutex> lock(audio_data->endpoint_mutex);
+	// 	delete audio_data->endpoint;
+	// 	info_log("Deleted Endpoint");
+	// }
 	
 
+	
+	audio_data->continue_deepgram_loop = true; //so we can start the loop.
+
+	// info_log("Reopen the endpoint");
+	
+	// audio_data->endpoint = new WebsocketEndpoint();
+	// audio_data->endpoint_id = audio_data->endpoint->connect(
+	// // 			"wss://api.deepgram.com/v1/listen?language=en&model=general-enhanced&tier=enhanced&encoding=linear16&sample_rate=44100",
+	// 			// audio_data->api_key);
+	// 			// "wss://deepgram.darwinai.link/v1/listen?language=ko&model=nova-2-general&encoding=linear16&sample_rate=44100", ""); //Darwins
+	// 			"wss://translate.darwinai.link", "1111");
+	
+	
+	
+	
 	if (audio_data->save_to_file) {
 		audio_data->output_file_path = "";
 		// set the output file path
@@ -328,33 +342,83 @@ void transcript_plugin_update(void *data, obs_data_t *s) //Mostly do nothing rig
 			info_log( "output file path is empty, but selected to save");
 		}
 	}
-
-	if (audio_data->context != nullptr && obs_source_enabled(audio_data->context)) {
-		if (audio_data->initial_creation) {
-			info_log("Initial filter creation and source enabled");
-
-			// source was enabled on creation
-			std::thread new_deepgram_thread(deepgram_loop,audio_data);
-			audio_data->deepgram_thread.swap(new_deepgram_thread);
-			
-			audio_data->active = true;
-			audio_data->initial_creation = false;
-		} 
-	}
-	else{
-
-		if(!(audio_data->deepgram_thread.joinable())){//if the thread isn't joinable, then there isn't a new thread running and we should run one
-			info_log("Creating new deepgram thread");
-			std::thread new_deepgram_thread(deepgram_loop,audio_data);
-
-			audio_data->deepgram_thread.swap(new_deepgram_thread);
-		}
+	// bool isIt = obs_source_enabled(audio_data->context);
+	// info_log("Is it? %s", isIt ? "true" : "false");
+	// if (audio_data->context != nullptr && obs_source_enabled(audio_data->context)) {
+	if (!(audio_data->filter_created)) {
+		info_log("Initial filter creation and source enabled");
 		
+		// source was enabled on creation
+		std::thread new_deepgram_thread(deepgram_loop,audio_data);
+		audio_data->deepgram_thread.swap(new_deepgram_thread);
+		
+		audio_data->active = true;
+		audio_data->initial_creation = false;
+	} 
+	else{
+		info_log("In the else");
+		if(audio_data->update_thread){
+			if(!(audio_data->deepgram_thread.joinable())){//if the thread isn't joinable, then there isn't a new thread running and we should run one
+				info_log("Creating new deepgram thread");
+				std::thread new_deepgram_thread(deepgram_loop,audio_data);
+
+				audio_data->deepgram_thread.swap(new_deepgram_thread);
+				
+			}
+		}
 	}
+	// }
+		
+	// else{
+
+	// 		if(!(audio_data->deepgram_thread.joinable())){//if the thread isn't joinable, then there isn't a new thread running and we should run one
+	// 			info_log("Creating new deepgram thread ILLEGALLY");
+	// 			std::thread new_deepgram_thread(deepgram_loop,audio_data);
+
+	// 			audio_data->deepgram_thread.swap(new_deepgram_thread);
+				
+	// 		}
+			
+	// 	}
 
 	
 }
 
+obs_properties_t *transcript_plugin_properties(void *data){
+	
+	
+	info_log("Running transcript_plugin_properties.");
+
+		
+	obs_properties_t *ppts = obs_properties_create();
+
+
+	// instead of starting with these text properties, try adding them later with "obs_properties_add_group"
+	// obs_properties_t *properties = obs_source_properties(dgsd->text_source);
+
+	// TODO: add a drop-down for language
+	obs_property_t *source_language = obs_properties_add_list(ppts, "source_language", MT_("The Langauge being Spoken"),
+										OBS_COMBO_TYPE_LIST,
+										OBS_COMBO_FORMAT_STRING);
+	//add the languages to the list
+	obs_property_list_add_string(source_language, MT_("한국어"), "kr");
+	obs_property_list_add_string(source_language, MT_("日本語"), "jp");
+	obs_property_list_add_string(source_language, MT_("日语"), "cn");
+
+	obs_property_t *target = obs_properties_add_list(ppts, "target_language", MT_("Translate to this language"),
+										OBS_COMBO_TYPE_LIST,
+										OBS_COMBO_FORMAT_STRING);
+	obs_property_list_add_string(target, MT_("한국어"), "kr");
+	// obs_property_list_add_string(target, MT_("Japanese - 日本語"), "jp");
+	// obs_property_list_add_string(target, MT_("Chinese - 日语"), "cn");
+
+
+	// add a drop-down to select the audio source
+
+	UNUSED_PARAMETER(data);
+	info_log("End of get properties");
+	return ppts;
+}
 
 void transcript_plugin_activate(void *data)
 {

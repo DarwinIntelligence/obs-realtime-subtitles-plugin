@@ -63,10 +63,12 @@ struct transcript_data {
 	bool process_while_muted = false;
 	bool rename_file_to_match_recording = false;
 	bool translate = false;
-	std::string target_lang;
+	std::string source_lang;
 	std::string translation_output;
 	bool initial_creation = true;
 	bool processed_successfully = false;
+	bool filter_created = false;
+	bool update_thread = false;
 
 
 	bool continue_deepgram_loop = true;
@@ -87,6 +89,7 @@ struct transcript_data {
 	// bool whisper_model_loaded_new;
 
 	// Use std for thread and mutex
+	std::mutex deepgram_mutex;
 	std::thread deepgram_thread;
 	std::mutex endpoint_mutex;
 

@@ -160,7 +160,7 @@ public:
 			return -1;
 		}
 
-		con->replace_header("Authorization", "Token " + api_key);
+		con->replace_header("Authorization", /*"Token "+*/ api_key);
 
 		int new_id = m_next_id++;
 		ConnectionMetadata::ptr metadata_ptr =
@@ -183,6 +183,7 @@ public:
 			websocketpp::lib::placeholders::_2));
 
 		m_endpoint.connect(con);
+		UNUSED_PARAMETER(api_key);
 
 		return new_id;
 	}
