@@ -27,6 +27,7 @@ struct transcript_data {
 	int endpoint_id;
 	std::string api_key = "60f33262bcddea4d1fd5b60eee42c79a6d9806b3";
 	std::string transcript;
+	std::string translation;
 
 	bool source_signals_set = false;
 
@@ -62,13 +63,16 @@ struct transcript_data {
 	bool save_only_while_recording = false;
 	bool process_while_muted = false;
 	bool rename_file_to_match_recording = false;
-	bool translate = false;
-	std::string source_lang = "jp";
+	std::string source_lang = "";
+	std::string target_lang = "";
 	std::string translation_output;
+	std::string url = "";
 	bool initial_creation = true;
 	bool processed_successfully = false;
 	bool filter_created = false;
 	bool update_thread = false;
+	bool transcribe = false;
+	bool translate = false;
 	int thread_iter = 0;
 
 

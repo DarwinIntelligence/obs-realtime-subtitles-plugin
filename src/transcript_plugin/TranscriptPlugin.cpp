@@ -138,7 +138,10 @@ void *transcript_plugin_create(obs_data_t *settings, obs_source_t *filter)
 	audio_data->min_sub_duration = (int)obs_data_get_int(settings, "min_sub_duration");
 	audio_data->last_sub_render_time = now_ms();
 	audio_data->endpoint = NULL;
-
+	audio_data->source_lang = obs_data_get_string(settings, "source_language");
+	audio_data->target_lang = obs_data_get_string(settings, "target_language");
+	audio_data->translate = obs_data_get_bool(settings, "translate");
+	audio_data->transcribe = obs_data_get_bool(settings, "transcribe");
 	audio_data->rename_file_to_match_recording =
 		obs_data_get_bool(settings, "rename_file_to_match_recording");
 	audio_data->process_while_muted = obs_data_get_bool(settings, "process_while_muted");
@@ -237,8 +240,10 @@ void transcript_plugin_defaults(obs_data_t *s)
 	// 			 (int)TokenBufferSegmentation::SEGMENTATION_TOKEN);
 
 
-	obs_data_set_default_string(s, "source_language", "jp");
-	obs_data_set_default_string(s, "target_language", "kr");
+	obs_data_set_default_string(s, "source_language", "ja");
+	obs_data_set_default_string(s, "target_language", "ko");
+	obs_data_set_default_bool(s,"translate", false);
+	obs_data_set_default_bool(s,"transcribe", false);
 
 
 
@@ -271,10 +276,16 @@ void transcript_plugin_update(void *data, obs_data_t *s) //Mostly do nothing rig
 	// audio_data->partial_transcription = obs_data_get_bool(s, "partial_group");
 	// audio_data->partial_latency = (int)obs_data_get_int(s, "partial_latency");
 	info_log("Source Lang %s New Lang %s", audio_data->source_lang.c_str(), obs_data_get_string(s, "source_language"));
-	if (audio_data->source_lang != obs_data_get_string(s, "source_language")){
+	if (audio_data->source_lang != obs_data_get_string(s, "source_language") || audio_data->target_lang != obs_data_get_string(s, "target_language") || audio_data->translate != obs_data_get_bool(s, "translate") || audio_data->transcribe != obs_data_get_bool(s, "transcribe")){
+		info_log("Changed settings");
 		audio_data->source_lang = obs_data_get_string(s, "source_language");
+		audio_data->target_lang = obs_data_get_string(s, "target_language");
+		audio_data->translate = obs_data_get_bool(s, "translate");
+		audio_data->transcribe = obs_data_get_bool(s, "transcribe");
+		audio_data->url = "wss://translate.darwinai.link/listen?client_id=1111&source=" + audio_data->source_lang + "&target=" + audio_data->target_lang;
 		audio_data-> update_thread = true;
 		audio_data->continue_deepgram_loop = false; //so we can stop the loop
+		info_log("setting change joining threads");
 		if(audio_data->deepgram_thread.joinable()){
 			audio_data->deepgram_thread.join();
 		}
@@ -341,19 +352,21 @@ obs_properties_t *transcript_plugin_properties(void *data){
 										OBS_COMBO_TYPE_LIST,
 										OBS_COMBO_FORMAT_STRING);
 	//add the languages to the list
-	obs_property_list_add_string(source_language, MT_("日本語"), "jp");
-	obs_property_list_add_string(source_language, MT_("한국어"), "kr");
-	obs_property_list_add_string(source_language, MT_("日语"), "cn");
+	obs_property_list_add_string(source_language, MT_("日本語"), "ja");
+	obs_property_list_add_string(source_language, MT_("한국어"), "ko");
+	obs_property_list_add_string(source_language, MT_("日语"), "zh");
 
 	obs_property_t *target = obs_properties_add_list(ppts, "target_language", MT_("Translate to this language"),
 										OBS_COMBO_TYPE_LIST,
 										OBS_COMBO_FORMAT_STRING);
-	obs_property_list_add_string(target, MT_("한국어"), "kr");
-	// obs_property_list_add_string(target, MT_("Japanese - 日本語"), "jp");
-	// obs_property_list_add_string(target, MT_("Chinese - 日语"), "cn");
+	obs_property_list_add_string(target, MT_("한국어"), "ko");
+	obs_property_list_add_string(target, MT_("Japanese - 日本語"), "ja");
+	obs_property_list_add_string(target, MT_("Chinese - 日语"), "zh");
+
+	obs_properties_add_bool(ppts, MT_("translate"), "Translate");
+	obs_properties_add_bool(ppts, MT_("transcribe"), "Transcribe");
 
 
-	// add a drop-down to select the audio source
 
 	UNUSED_PARAMETER(data);
 	info_log("End of get properties");
