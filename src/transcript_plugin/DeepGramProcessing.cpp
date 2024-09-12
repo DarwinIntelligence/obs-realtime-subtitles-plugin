@@ -24,7 +24,7 @@ void deepgram_loop(void *data){
     dg->endpoint = new WebsocketEndpoint();
 	dg->endpoint_id = dg->endpoint->connect(
 				// "wss://deepgram.darwinai.link/v1/listen?language=ko&model=nova-2-general&encoding=linear16&sample_rate=44100", ""); //Darwins
-				"wss://translate.darwinai.link/listen?client_id=" + std::to_string(dg->thread_iter), "1111"); //Darwins
+				"wss://translate.darwinai.link/listen?client_id=" + std::to_string(dg->thread_iter), "12345678@"); //Darwins
     
     if(dg->endpoint == NULL){
         info_log("Didn't connect. Exiting deepgram loop");
