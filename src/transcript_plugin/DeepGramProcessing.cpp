@@ -11,18 +11,20 @@
 void deepgram_loop(void *data){
     info_log("Here is the new thread id: from deepgram loop %zu", std::hash<std::thread::id>{}(std::this_thread::get_id()));
 
+
     if (data == nullptr){
         info_log("deepgram_loop recieved a null ptr for data");
         return;
     }
 
     struct transcript_data *dg = static_cast<struct transcript_data *>(data);
-        info_log("Here is endpoint ID %d", dg->endpoint_id);
+        // info_log("Here is endpoint ID %d", dg->endpoint_id);
+    dg->thread_iter++;
         
     dg->endpoint = new WebsocketEndpoint();
 	dg->endpoint_id = dg->endpoint->connect(
-				"wss://deepgram.darwinai.link/v1/listen?language=ko&model=nova-2-general&encoding=linear16&sample_rate=44100", ""); //Darwins
-				// "wss://translate.darwinai.link/listen?client_id=1235", "1111"); //Darwins
+				// "wss://deepgram.darwinai.link/v1/listen?language=ko&model=nova-2-general&encoding=linear16&sample_rate=44100", ""); //Darwins
+				"wss://translate.darwinai.link/listen?client_id=" + std::to_string(dg->thread_iter), "1111"); //Darwins
     
     if(dg->endpoint == NULL){
         info_log("Didn't connect. Exiting deepgram loop");
@@ -69,14 +71,13 @@ void deepgram_loop(void *data){
         std::this_thread::sleep_for(std::chrono::milliseconds(10));//adding a print stops seg faults, so I think we are checking the socket too often.
         
     }
-    info_log("Exiting the deepgram loop");
     delete dg->endpoint;
+    dg->continue_deepgram_loop = true; //so we can start the loop.
+    info_log("Exiting the deepgram loop");
+
+
 }
 
 
 
 
-// void send_to_deepgram(transcript_data *dgd){
-//     dgd->buffered_output_num_chars = dgd->buffered_output_num_chars;
-//     break;
-// }

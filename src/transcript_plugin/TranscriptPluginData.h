@@ -63,12 +63,13 @@ struct transcript_data {
 	bool process_while_muted = false;
 	bool rename_file_to_match_recording = false;
 	bool translate = false;
-	std::string source_lang;
+	std::string source_lang = "jp";
 	std::string translation_output;
 	bool initial_creation = true;
 	bool processed_successfully = false;
 	bool filter_created = false;
 	bool update_thread = false;
+	int thread_iter = 0;
 
 
 	bool continue_deepgram_loop = true;
@@ -76,54 +77,14 @@ struct transcript_data {
 	//DeepGram Info
 	// std::string
 
-	// Last transcription result
-	
-
 	// Text source to output the subtitles
 	std::string text_source_name;
-	// Callback to set the text in the output text source (subtitles)
-	// std::function<void(const DetectionResultWithText &result)> setTextCallback;
-	// Output file path to write the subtitles
 	std::string output_file_path;
-	// std::string whisper_model_file_currently_loaded;
-	// bool whisper_model_loaded_new;
-
-	// Use std for thread and mutex
 	std::mutex deepgram_mutex;
 	std::thread deepgram_thread;
 	std::mutex endpoint_mutex;
 
-	// std::mutex deepgram_buf_mutex;
-	// std::mutex deepgram_ctx_mutex;
-	// std::condition_variable wshiper_thread_cv;
-
-	// translation context
-	// struct translation_context translation_ctx;
-	// std::string translation_model_index;
-	// std::string translation_model_path_external;
-
-	// bool buffered_output = false;
-	// // TokenBufferThread captions_monitor;
-	// // TokenBufferThread translation_monitor;
-	// int buffered_output_num_lines = 2;
-	// int buffered_output_num_chars = 30;
-	// TokenBufferSegmentation buffered_output_output_type =
-	// 	TokenBufferSegmentation::SEGMENTATION_TOKEN;
-
-	// ctor
-	// transcription_filter_data() : whisper_buf_mutex(), whisper_ctx_mutex(), wshiper_thread_cv()
-	// {
-	// 	// initialize all pointers to nullptr
-	// 	for (size_t i = 0; i < MAX_PREPROC_CHANNELS; i++) {
-	// 		copy_buffers[i] = nullptr;
-	// 	}
-	// 	context = nullptr;
-	// 	resampler_to_deepgram = nullptr;
-	// 	whisper_model_path = "";
-	// 	whisper_context = nullptr;
-	// 	output_file_path = "";
-	// 	whisper_model_file_currently_loaded = "";
-	// }
+	
 };
 
 struct transcript_audio_info{
