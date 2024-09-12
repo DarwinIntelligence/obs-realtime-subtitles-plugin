@@ -33,7 +33,6 @@ extern struct obs_source_info transcript_plugin_info;
 bool obs_module_load(void)
 {
 	info_log("plugin loaded successfully (version %s)", PLUGIN_VERSION);
-
 	const auto main_window =
 		static_cast<QMainWindow *>(obs_frontend_get_main_window());
 	obs_frontend_push_ui_translation(obs_module_get_string);
