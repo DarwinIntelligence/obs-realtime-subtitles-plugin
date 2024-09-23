@@ -148,6 +148,10 @@ void *transcript_plugin_create(obs_data_t *settings, obs_source_t *filter)
 	
 
 	audio_data->context = filter; //technically, this is a filter. We take the audio, store it, but don't do anything to it here. 
+	
+	audio_data->text_source_name = create_obs_text_source_if_needed();
+	obs_data_set_string(settings, audio_data->text_source_name.c_str(), audio_data->text_source_name.c_str());
+
 
 	info_log( "channels %d, frames %d, sample_rate %d", (int)audio_data->channels,
 		(int)audio_data->frames, audio_data->sample_rate);
@@ -166,18 +170,21 @@ void *transcript_plugin_create(obs_data_t *settings, obs_source_t *filter)
 
     
 	info_log( "clear text source data");
-	const char *subtitle_sources = obs_data_get_string(settings, "subtitle_sources");
-	if (subtitle_sources == nullptr || strlen(subtitle_sources) == 0 ||
-	    strcmp(subtitle_sources, "none") == 0 || strcmp(subtitle_sources, "(null)") == 0) {
-		info_log( "Create text source");
-		create_obs_text_source_if_needed();
-		audio_data->text_source_name = "Darwin Realtime Subtitles";
-		obs_data_set_string(settings, "subtitle_sources", "Darwin Realtime Subtitles");
-        info_log("Made a text source: Darwin Realtime Subtitles");
-	} else {
-		// set the text source name
-		audio_data->text_source_name = subtitle_sources;
-	}
+
+
+	// const char *subtitle_sources = obs_data_get_string(settings, "subtitle_sources");
+	
+	// if (subtitle_sources == nullptr || strlen(subtitle_sources) == 0 ||
+	//     strcmp(subtitle_sources, "none") == 0 || strcmp(subtitle_sources, "(null)") == 0) {
+	// 	info_log( "Create text source");
+	// 	create_obs_text_source_if_needed();
+	// 	audio_data->text_source_name = "Darwin Realtime Subtitles";
+	// 	obs_data_set_string(settings, "subtitle_sources", "Darwin Realtime Subtitles");
+    //     info_log("Made a text source: Darwin Realtime Subtitles");
+	// } else {
+	// 	// set the text source name
+	// 	audio_data->text_source_name = subtitle_sources;
+	// }
 
 	audio_data->output_file_path = std::string("");
 
@@ -220,7 +227,11 @@ void transcript_plugin_destroy(void *data)
 		info_log("Trying to join threads");
 		audio_data->deepgram_thread.join();
 	}
-	
+	// obs_source_t *text = obs_get_source_by_name(audio_data->text_source_name.c_str());
+	// obs_source_release(text);
+	// obs_source_remove(text);//get rid of the subtitle source so another can be made when it is made again.
+	remove_sources();
+
 	info_log("Done PLUGIN DESTROY");
 
 	
@@ -276,6 +287,15 @@ void transcript_plugin_update(void *data, obs_data_t *s) //Mostly do nothing rig
 	// audio_data->partial_transcription = obs_data_get_bool(s, "partial_group");
 	// audio_data->partial_latency = (int)obs_data_get_int(s, "partial_latency");
 	info_log("Source Lang %s New Lang %s", audio_data->source_lang.c_str(), obs_data_get_string(s, "source_language"));
+	// if(audio_data->text_source_name != ""){//fi we have a text source, get rid of it so we can make a new one
+	// 	info_log("Not an empty subtitle string. %s", audio_data->text_source_name.c_str());
+	// 	obs_source_t *text = obs_get_source_by_name(audio_data->text_source_name.c_str());
+	// 	obs_source_release(text);
+	// 	obs_source_remove(text);
+	// }
+		
+	// audio_data->text_source_name = create_obs_text_source_if_needed();
+	// obs_data_set_string(s, audio_data->text_source_name.c_str(), audio_data->text_source_name.c_str());
 	if (audio_data->source_lang != obs_data_get_string(s, "source_language") || audio_data->target_lang != obs_data_get_string(s, "target_language") || audio_data->translate != obs_data_get_bool(s, "translate") || audio_data->transcribe != obs_data_get_bool(s, "transcribe")){
 		info_log("Changed settings");
 		audio_data->source_lang = obs_data_get_string(s, "source_language");
@@ -386,6 +406,11 @@ void transcript_plugin_deactivate(void *data)
 	struct transcript_data *audio_data =
 		static_cast<struct transcript_data *>(data);
 	info_log( "filter deactivated");
+	
+	// obs_source_t *text = obs_get_source_by_name(audio_data->text_source_name.c_str());
+	// obs_source_release(text);
+	// obs_source_remove(text);
+	remove_sources();
 	audio_data->active = false;
 }
 
@@ -397,6 +422,11 @@ void transcript_plugin_remove(void *data, obs_source_t *source)
 	info_log("filter remove");
 
 	disconnect_source_signals(df, source);
+	// obs_source_t *text = obs_get_source_by_name(df->text_source_name.c_str());
+	// obs_source_release(text);
+	// obs_source_remove(text);
+	remove_sources();
+	info_log("filter remove done");
 }
 
 int16_t f32_to_i16(float f)

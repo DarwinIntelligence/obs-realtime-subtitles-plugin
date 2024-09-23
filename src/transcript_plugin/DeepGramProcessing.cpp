@@ -24,7 +24,7 @@ void deepgram_loop(void *data){
 	dg->endpoint_id = dg->endpoint->connect(
 				// "wss://deepgram.darwinai.link/v1/listen?language=ko&model=nova-2-general&encoding=linear16&sample_rate=44100", ""); //Darwins
 				// "wss://translate.darwinai.link/listen?client_id=1111", "12345678@"); //Darwins
-                dg->url, "12345678@");
+                dg->url, dg->api_key);
     
     if(dg->endpoint == NULL){
         info_log("Didn't connect. Exiting deepgram loop");
@@ -65,7 +65,7 @@ void deepgram_loop(void *data){
                                 dg->transcript = json_transcript;
                             }
                             info_log("Here is the lang we are printing in %s", dg->source_lang.c_str());
-                            send_caption_to_source("Darwin Realtime Subtitles", dg->transcript.c_str());
+                            send_caption_to_source(dg->text_source_name, dg->transcript.c_str());
                             
                         }
                     }
@@ -93,7 +93,7 @@ void deepgram_loop(void *data){
                                 dg->translation = json_translation;
                             }
                             // info_log("Here is the lang we are printing in %s", dg->source_lang.c_str());
-                            send_caption_to_source("Darwin Realtime Subtitles", dg->translation.c_str());
+                            send_caption_to_source(dg->text_source_name, dg->translation.c_str());
                             
                         }
                     }
