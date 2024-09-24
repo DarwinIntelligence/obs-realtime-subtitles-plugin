@@ -50,9 +50,23 @@ if(ENABLE_QT)
                AUTORCC ON)
 endif()
 
-find_package(OpenSSL COMPONENTS SSL Crypto)
-link_directories("C:/Program Files/OpenSSL-Win64/lib/VC/x64/MD")
-target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE OpenSSL::SSL OpenSSL::Crypto)
+#set(OPENSSL_ROOT_DIR "C:/Program Files/OpenSSL-Win64")
+
+#find_package(OpenSSL REQUIRED COMPONENTS SSL Crypto)
+#link_directories("C:/Program Files/OpenSSL-Win64/lib/VC/x64/MD") 
+#target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE OpenSSL::SSL OpenSSL::Crypto)
+
+set(OPENSSL_ROOT_DIR "C:/Program Files/OpenSSL-Win64")
+
+# Manually specify the exact path to OpenSSL libraries
+set(OPENSSL_CRYPTO_LIBRARY "C:/Program Files/OpenSSL-Win64/lib/VC/x64/MD/libcrypto.lib")
+set(OPENSSL_SSL_LIBRARY "C:/Program Files/OpenSSL-Win64/lib/VC/x64/MD/libssl.lib")
+
+target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE ${OPENSSL_SSL_LIBRARY} ${OPENSSL_CRYPTO_LIBRARY})
+
+
+
+
 
 file(GLOB Window src/window/*.cpp)
 
