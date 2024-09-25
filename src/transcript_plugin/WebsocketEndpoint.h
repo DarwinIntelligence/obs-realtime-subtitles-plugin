@@ -10,7 +10,7 @@
 #define WEBSOCKET_ENDPOINT_HPP
 
 typedef websocketpp::client<websocketpp::config::asio_tls_client> client;
-typedef std::shared_ptr<boost::asio::ssl::context> context_ptr;
+typedef std::shared_ptr<asio::ssl::context> context_ptr;
 
 class ConnectionMetadata {
 public:
@@ -134,15 +134,15 @@ public:
 	static context_ptr on_tls_init()
 	{
 		// establishes an SSL connection
-		context_ptr ctx = std::make_shared<boost::asio::ssl::context>(
-			boost::asio::ssl::context::sslv23);
+		context_ptr ctx = std::make_shared<asio::ssl::context>(
+			asio::ssl::context::sslv23);
 
 		try {
 			ctx->set_options(
-				boost::asio::ssl::context::default_workarounds |
-				boost::asio::ssl::context::no_sslv2 |
-				boost::asio::ssl::context::no_sslv3 |
-				boost::asio::ssl::context::single_dh_use);
+				asio::ssl::context::default_workarounds |
+				asio::ssl::context::no_sslv2 |
+				asio::ssl::context::no_sslv3 |
+				asio::ssl::context::single_dh_use);
 		} catch (std::exception &e) {
 			std::cout << "Error in context pointer: " << e.what()
 				  << std::endl;
