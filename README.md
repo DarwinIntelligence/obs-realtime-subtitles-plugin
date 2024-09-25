@@ -2,12 +2,13 @@
 
 This plugin is for use with Darwin Intelligence's RealTime subtitles AI product.
 
-It is supported on Windows/MacOS. Currently not tested on Linux but it may also be possible with tweaks.
+Currently in development so some bugs may occur. Requires Internet Access at all times of necessary Transcript/Translation
+
+It is supported on Windows/Linux.
 
 ## Requirements
 
-In order to use you will need an API Key which you can sign up for here:
-- https://darwinai.ai
+In order to use you will need an API Key which you can sign up for here by emailing - darwinai@darwinai.ai
 
 ## Features
 
@@ -16,7 +17,10 @@ In order to use you will need an API Key which you can sign up for here:
     - Chinese (중국어)
     - Japanese (일분어)
 
-## Usage (Windows)
+## Installation (Windows)
+
+
+## Usage
 
 1. Add a source for each microphone source (BJ) ![BJ1 Audio Source](./assets/1.png)
 1. Slect Create new and name accordingly to person who will use mic ![Audio Source](./assets/2.png)
