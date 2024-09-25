@@ -65,13 +65,13 @@ set(OPENSSL_SSL_LIBRARY "C:/Program Files/OpenSSL-Win64/lib/VC/x64/MD/libssl.lib
 
 target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE ${OPENSSL_SSL_LIBRARY} ${OPENSSL_CRYPTO_LIBRARY})
 
-file(GLOB CFile src/transcript_plugin/TranscriptPlugin.c)
-
-file(GLOB Plugin src/plugin/*.cpp)
-
 file(GLOB Transcript src/transcript_plugin/*.cpp)
 
 target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE /wd4267)
 
-target_sources(${CMAKE_PROJECT_NAME} PRIVATE  src/obs_realtime_subtitles_plugin.cpp ${CFile} ${Plugin} ${Transcript})
+target_sources(
+    ${CMAKE_PROJECT_NAME}
+    PRIVATE src/obs_realtime_subtitles_plugin.cpp
+            src/transcript_plugin/TranscriptPlugin.c
+            ${Transcript})
 set_target_properties_plugin(${CMAKE_PROJECT_NAME} PROPERTIES OUTPUT_NAME ${_name})

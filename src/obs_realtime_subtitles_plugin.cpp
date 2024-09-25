@@ -14,8 +14,13 @@ OBS_DECLARE_MODULE();
 OBS_MODULE_USE_DEFAULT_LOCALE(PLUGIN_NAME, "en-GB");
 
 OBS_MODULE_AUTHOR("DarwinIntelligence");
-
+#ifdef __cplusplus
+extern "C" {
+#endif
 extern struct obs_source_info transcript_plugin_info;
+#ifdef __cplusplus
+}
+#endif
 
 bool obs_module_load(void)
 {

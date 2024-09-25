@@ -1,12 +1,10 @@
+#include <obs-module.h>
+#include "PluginSupport.h"
 #include "TranscriptPlugin.h"
 #include "TranscriptPluginData.h"
 #include "TranscriptPluginCallbacks.h"
 #include "TranscriptPluginUtils.h"
 #include "DeepGramProcessing.h"
-
-#include <obs-module.h>
-
-
 
 #include <algorithm>
 #include <fstream>
