@@ -1,10 +1,8 @@
 #include <QAction>
 
-#include <MainWindow.h>
-#include <obs-source.h>
 #include <obs-module.h>
+#include <obs-source.h>
 #include <PluginSupport.h>
-#include <GUIDock.h>
 #include "transcript_plugin/TranscriptPlugin.h"
 #include "transcript_plugin/TranscriptPluginCallbacks.h"
 #include "transcript_plugin/TranscriptPluginData.h"
