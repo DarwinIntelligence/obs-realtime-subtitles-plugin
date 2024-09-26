@@ -28,9 +28,12 @@ To install this plugin, you will need the openssl library. To do so, you will us
    choco install openssl
    a. Note, if the choco command doesn't work, you may have to close your terminal and repeat step 1.
 5. Next you must copy Darwin's translator plugin into your obs plugin folder.
-   a. Copy the two files recieved from Darwin. ![image](https://github.com/user-attachments/assets/76bacb94-ff44-4d5e-8e57-0018ffd1f04d)
+
+   a. Copy the two files recieved from Darwin.
+
+   ![image](https://github.com/user-attachments/assets/76bacb94-ff44-4d5e-8e57-0018ffd1f04d)
    b. Paste them into your obs plugins folder. Usually this is located at "C:\Program Files\obs-studio\obs-plugins\64bit" ![image](https://github.com/user-attachments/assets/d13be809-dfbb-4def-8abe-5633e2e7fe2a)
-6. Darwin Translation is now ready to use!
+7. Darwin Translation is now ready to use!
 
 
 
