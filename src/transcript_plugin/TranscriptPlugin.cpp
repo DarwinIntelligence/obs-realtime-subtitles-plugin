@@ -263,6 +263,7 @@ void transcript_plugin_defaults(obs_data_t *s)
 
 void transcript_plugin_update(void *data, obs_data_t *s) //Mostly do nothing right now. None of our translation stuff is set up yet.
 {
+	std::this_thread::sleep_for(std::chrono::milliseconds(100));//to stop the 
     info_log("Updating the plugin");
 	struct transcript_data *audio_data =
 		static_cast<struct transcript_data *>(data);

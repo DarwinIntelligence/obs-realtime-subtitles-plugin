@@ -10,6 +10,8 @@
 #include <cctype>
 
 
+#define MAX_CONNECTIONS 8
+
 
 
 // Convert channels number to a speaker layout

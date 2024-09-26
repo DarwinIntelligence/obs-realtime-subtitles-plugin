@@ -59,7 +59,7 @@ void deepgram_loop(void *data){
                             std::string combined =
                                 dg->transcript + json_transcript;
                             if (combined.length() <
-                                20) { //This is arbitrary I need to change this to a real number.
+                                50) { //This is arbitrary I need to change this to a real number.
                                 dg->transcript = combined;
                             } else {
                                 dg->transcript = json_transcript;
@@ -72,7 +72,7 @@ void deepgram_loop(void *data){
                 }
                 if(dg->translate){
                     
-                    info_log("Translate? Nah, Yea");
+                    //info_log("Translate? Nah, Yea");
 
                     std::string json_translation =
                         json_message["channel"]["alternatives"][0]
@@ -87,7 +87,7 @@ void deepgram_loop(void *data){
                             std::string combined =
                                 dg->translation + json_translation;
                             if (combined.length() <
-                                20) { //This is arbitrary I need to change this to a real number.
+                                50) { //This is arbitrary I need to change this to a real number.
                                 dg->translation = combined;
                             } else {
                                 dg->translation = json_translation;
@@ -103,7 +103,7 @@ void deepgram_loop(void *data){
             // info_log("Transcript from deepgram_loop %s", dg->transcript.c_str());
         }
         
-        std::this_thread::sleep_for(std::chrono::milliseconds(10));//adding a print stops seg faults, so I think we are checking the socket too often.
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));//adding a print stops seg faults, so I think we are checking the socket too often.
         keep_alive++;
         if(keep_alive == 100){//so the websocket never closes unless we want it to
             if (dg->endpoint != NULL){

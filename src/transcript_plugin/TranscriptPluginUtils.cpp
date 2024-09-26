@@ -9,7 +9,7 @@
 std::string create_obs_text_source_if_needed()
 {
 	// check if a source called "Darwin Realtime Subtitles" exists
-	for (int i = 1; i < 5; i++){
+	for (int i = 1; i < (MAX_CONNECTIONS+1); i++){
 		std::string sub_name= "Darwin Realtime Subtitles " + std::to_string(i); 
 		obs_source_t *source = obs_get_source_by_name(sub_name.c_str());
 		if (!source) {
@@ -68,7 +68,7 @@ std::string create_obs_text_source_if_needed()
 
 	}
 	
-	return "Darwin Realtime Subtitles 4"; //If there are already 4, just return the 4th one. You will have to manually delete them for now.
+	return "Darwin Realtime Subtitles " +std::to_string(MAX_CONNECTIONS); //If there are already 4, just return the 4th one. You will have to manually delete them for now.
 	
 	
 }
@@ -90,7 +90,7 @@ bool add_sources_to_list(void *list_property, obs_source_t *source)
 
 void remove_sources()
 {
-	for (int i = 1; i < 5; i++){
+	for (int i = 1; i < (MAX_CONNECTIONS + 1); i++){
 		std::string sub_name= "Darwin Realtime Subtitles " + std::to_string(i); 
 		obs_source_t *source = obs_get_source_by_name(sub_name.c_str());
 		if(source){
