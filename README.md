@@ -41,7 +41,7 @@ To install this plugin, you will need the openssl library. To do so, you will us
 ## Usage
 
 1. Add a source for each microphone source (BJ) ![BJ1 Audio Source](./assets/1.png)
-1. Slect Create new and name accordingly to person who will use mic ![Audio Source](./assets/2.png)
+1. Select Create new and name accordingly to person who will use mic ![Audio Source](./assets/2.png)
 1. Select Source Properties ![Select Audio Source Properties](./assets/3.png)
 1. Select Audio Device and close ![Audio Source Properties](./assets/4.png)
 1. Select Filters ![BJ1 Audio Source](./assets/5.png)
