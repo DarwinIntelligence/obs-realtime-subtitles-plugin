@@ -25,7 +25,7 @@ struct transcript_data {
 	
 	WebsocketEndpoint *endpoint;
 	int endpoint_id;
-	std::string api_key = "8bC901-6Tf31a-7g7g7g-45Et23";
+	std::string api_key = "";
 	std::string transcript;
 	std::string translation;
 
