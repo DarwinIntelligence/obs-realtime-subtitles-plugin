@@ -16,6 +16,7 @@ In order to use you will need an API Key which you can sign up for here by email
     - Korean (한국어)
     - Chinese (중국어)
     - Japanese (일분어)
+    - English
 
 ## Installation (Windows)
 To install this plugin, you will need the openssl library. To do so, you will use the windows installation tool Chocolatey. Installation steps are shown below. You can also find them by visiting the Chocolatey website (https://chocolatey.org/install).

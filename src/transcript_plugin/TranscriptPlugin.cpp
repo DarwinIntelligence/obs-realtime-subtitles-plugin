@@ -373,12 +373,14 @@ obs_properties_t *transcript_plugin_properties(void *data){
 	//add the languages to the list
 	obs_property_list_add_string(source_language, MT_("日本語"), "ja");
 	obs_property_list_add_string(source_language, MT_("한국어"), "ko");
+	obs_property_list_add_string(source_language, MT_("English"), "en");
 	obs_property_list_add_string(source_language, MT_("日语"), "zh");
 
 	obs_property_t *target = obs_properties_add_list(ppts, "target_language", MT_("Translate to this language"),
 										OBS_COMBO_TYPE_LIST,
 										OBS_COMBO_FORMAT_STRING);
 	obs_property_list_add_string(target, MT_("한국어"), "ko");
+	obs_property_list_add_string(target, MT_("English"), "en");
 	obs_property_list_add_string(target, MT_("Japanese - 日本語"), "ja");
 	obs_property_list_add_string(target, MT_("Chinese - 日语"), "zh");
 
